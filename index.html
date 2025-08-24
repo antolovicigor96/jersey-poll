@@ -1009,7 +1009,11 @@
             
             // Show only vote tab
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.getElementById('vote').classList.add('active');
+            const voteTab = document.getElementById('vote');
+            voteTab.classList.add('active');
+            voteTab.style.display = 'block'; // Force display even without CSS class
+            console.log('🏷️ Vote tab active class added:', voteTab.classList.contains('active'));
+            console.log('🏷️ Vote tab display style:', voteTab.style.display);
             
             // Ensure name entry section is visible if no current voter
             if (!currentVoter && !hasVoted) {

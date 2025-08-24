@@ -1484,6 +1484,13 @@
             const nameEntrySection = document.getElementById('nameEntrySection');
             const currentVoterDisplay = document.getElementById('currentVoterDisplay');
 
+            console.log('🔍 updateVotingDisplay called:', {
+                hasVoted: hasVoted,
+                currentVoter: currentVoter,
+                jerseysCount: jerseys.length,
+                currentMode: currentMode
+            });
+
             if (hasVoted) {
                 message.innerHTML = `<div class="success">✅ Thank you ${currentVoter}! Your vote has been submitted.</div>`;
                 message.style.display = 'block';
@@ -1496,6 +1503,7 @@
             }
 
             if (!currentVoter) {
+                console.log('👤 No current voter - showing name entry form');
                 // Show name entry form
                 nameEntrySection.style.display = 'block';
                 currentVoterDisplay.style.display = 'none';
@@ -1506,6 +1514,7 @@
             }
 
             if (jerseys.length === 0) {
+                console.log('🏀 No jerseys available');
                 if (currentMode === 'vote') {
                     grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #666;">
                         <h3>🏀 Loading Jersey Designs...</h3>
@@ -1519,6 +1528,8 @@
                 }
                 return;
             }
+
+            console.log('✅ Showing voting interface with', jerseys.length, 'jerseys');
 
             // Show voting interface
             nameEntrySection.style.display = 'none';

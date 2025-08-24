@@ -887,7 +887,7 @@
             </div>
 
             <!-- Name Entry Section -->
-            <div id="nameEntrySection" style="display: none;">
+            <div id="nameEntrySection">
                 <div style="text-align: center; background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 15px; margin-bottom: 20px;">
                     <h3>👤 Enter Your Name</h3>
                     <p style="margin-bottom: 20px;">Please enter your name to start voting:</p>
@@ -906,10 +906,10 @@
                 <div id="currentVoterDisplay" style="display: none; text-align: center; margin-bottom: 20px; padding: 15px; background: rgba(255, 107, 53, 0.1); border-radius: 10px;">
                     <strong>🗳️ Voting as: <span id="currentVoterName"></span></strong>
                 </div>
-                <div class="voting-grid" id="votingGrid">
+                <div class="voting-grid" id="votingGrid" style="display: none;">
                     <!-- Voting options will be added here -->
                 </div>
-                <button id="submitVote" class="vote-submit" onclick="submitVote()" disabled>
+                <button id="submitVote" class="vote-submit" onclick="submitVote()" disabled style="display: none;">
                     Submit My Vote (0/6 points allocated)
                 </button>
             </div>
@@ -1494,11 +1494,6 @@
         }
 
         function updateVotingDisplay() {
-            const grid = document.getElementById('votingGrid');
-            const message = document.getElementById('votingMessage');
-            const nameEntrySection = document.getElementById('nameEntrySection');
-            const currentVoterDisplay = document.getElementById('currentVoterDisplay');
-
             console.log('🔍 updateVotingDisplay called:', {
                 hasVoted: hasVoted,
                 currentVoter: currentVoter,
@@ -1506,72 +1501,73 @@
                 currentMode: currentMode
             });
 
+            const grid = document.getElementById('votingGrid');
+            const message = document.getElementById('votingMessage');
+            const nameEntrySection = document.getElementById('nameEntrySection');
+            const currentVoterDisplay = document.getElementById('currentVoterDisplay');
+            const submitButton = document.getElementById('submitVote');
+
+            // Clear any existing messages
+            message.style.display = 'none';
+
+            // If already voted, show success message
             if (hasVoted) {
                 message.innerHTML = `<div class="success">✅ Thank you ${currentVoter}! Your vote has been submitted.</div>`;
                 message.style.display = 'block';
                 nameEntrySection.style.display = 'none';
                 currentVoterDisplay.style.display = 'block';
-                document.getElementById('currentVoterName').textContent = currentVoter;
+                document.getElementById('currentVoterName').textContent = currentVoter || 'Unknown';
                 grid.style.display = 'none';
-                document.getElementById('submitVote').style.display = 'none';
+                submitButton.style.display = 'none';
                 return;
             }
 
+            // If no jerseys available, show message
+            if (jerseys.length === 0) {
+                console.log('🏀 No jerseys available');
+                nameEntrySection.style.display = 'none';
+                currentVoterDisplay.style.display = 'none';
+                submitButton.style.display = 'none';
+                
+                grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #666;">
+                    <h3>🏀 No Jersey Designs Available</h3>
+                    <p>The poll administrator hasn't uploaded any jersey designs yet.</p>
+                    <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #17a2b8; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        🔄 Refresh Page
+                    </button>
+                </div>`;
+                grid.style.display = 'block';
+                return;
+            }
+
+            // If no current voter, show name entry
             if (!currentVoter) {
                 console.log('👤 No current voter - showing name entry form');
-                // Show name entry form
                 nameEntrySection.style.display = 'block';
                 currentVoterDisplay.style.display = 'none';
                 grid.style.display = 'none';
-                document.getElementById('submitVote').style.display = 'none';
-                message.style.display = 'none';
+                submitButton.style.display = 'none';
                 return;
             }
-
-            if (jerseys.length === 0) {
-                console.log('🏀 No jerseys available');
-                if (currentMode === 'vote') {
-                    if (isLoading) {
-                        grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #666;">
-                            <h3>🏀 Loading Jersey Designs...</h3>
-                            <p>Please wait while we load the jersey options from the database.</p>
-                            <div style="margin: 20px 0;">⏳ Loading...</div>
-                        </div>`;
-                    } else {
-                        grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #666;">
-                            <h3>🏀 No Jersey Designs Available</h3>
-                            <p>The poll administrator hasn't uploaded any jersey designs yet.</p>
-                            <button onclick="debugVotingPage()" style="margin-top: 20px; padding: 10px 20px; background: #ff6b35; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                                🔧 Debug Info
-                            </button>
-                            <button onclick="location.reload()" style="margin-top: 10px; padding: 10px 20px; background: #17a2b8; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                                🔄 Refresh Page
-                            </button>
-                        </div>`;
-                    }
-                } else {
-                    grid.innerHTML = '<p style="text-align: center; color: #666;">No jerseys uploaded yet. Go to Setup Jerseys tab to add some!</p>';
-                }
-                return;
-            }
-
-            console.log('✅ Showing voting interface with', jerseys.length, 'jerseys');
 
             // Show voting interface
+            console.log('✅ Showing voting interface with', jerseys.length, 'jerseys');
             nameEntrySection.style.display = 'none';
             currentVoterDisplay.style.display = 'block';
+            document.getElementById('currentVoterName').textContent = currentVoter;
             grid.style.display = 'grid';
-            document.getElementById('submitVote').style.display = 'block';
+            submitButton.style.display = 'block';
 
+            // Render jerseys
             grid.innerHTML = jerseys.map(jersey => `
                 <div class="voting-item" id="item-${jersey.id}">
-                    <img src="${jersey.image}" alt="${jersey.name}">
-                    <div class="voting-controls">
-                        <div class="jersey-name">${jersey.name}</div>
-                        <div class="points-selector">
-                            <button class="point-btn" onclick="selectPoints('${jersey.id}', 3)">3</button>
-                            <button class="point-btn" onclick="selectPoints('${jersey.id}', 2)">2</button>
-                            <button class="point-btn" onclick="selectPoints('${jersey.id}', 1)">1</button>
+                    <img src="${jersey.image}" alt="${jersey.name}" style="width: 100%; height: 200px; object-fit: cover;">
+                    <div class="voting-controls" style="padding: 20px; text-align: center;">
+                        <div class="jersey-name" style="font-weight: bold; margin-bottom: 15px; font-size: 1.1em;">${jersey.name}</div>
+                        <div class="points-selector" style="display: flex; justify-content: center; gap: 10px;">
+                            <button class="point-btn" onclick="selectPoints('${jersey.id}', 3)" style="background: #f0f0f0; border: 2px solid #ddd; border-radius: 50%; width: 45px; height: 45px; font-size: 18px; font-weight: bold; cursor: pointer;">3</button>
+                            <button class="point-btn" onclick="selectPoints('${jersey.id}', 2)" style="background: #f0f0f0; border: 2px solid #ddd; border-radius: 50%; width: 45px; height: 45px; font-size: 18px; font-weight: bold; cursor: pointer;">2</button>
+                            <button class="point-btn" onclick="selectPoints('${jersey.id}', 1)" style="background: #f0f0f0; border: 2px solid #ddd; border-radius: 50%; width: 45px; height: 45px; font-size: 18px; font-weight: bold; cursor: pointer;">1</button>
                         </div>
                     </div>
                 </div>

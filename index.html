@@ -111,9 +111,7 @@
             padding: 15px;
             text-align: center;
             transition: all 0.3s ease;
-            cursor: pointer;
             border: 3px solid transparent;
-            position: relative;
         }
 
         .jersey-card:hover {
@@ -121,7 +119,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
 
-        .jersey-card.selected {
+        .jersey-card.has-vote {
             border-color: #667eea;
             background: #e3f2fd;
         }
@@ -136,24 +134,42 @@
         }
 
         .jersey-card h3 {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: #333;
         }
 
-        .points-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #667eea;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
+        .vote-options {
             display: flex;
-            align-items: center;
             justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .point-btn {
+            background: #f0f0f0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 8px 12px;
             font-weight: bold;
-            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 45px;
+        }
+
+        .point-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-1px);
+        }
+
+        .point-btn.selected {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .point-btn.selected:hover {
+            background: linear-gradient(45deg, #764ba2, #667eea);
         }
 
         .vote-btn {
@@ -274,8 +290,8 @@
                 <h3>📝 Instrukcije za glasanje:</h3>
                 <ul>
                     <li>Unesite svoje ime (mora biti jedinstveno)</li>
-                    <li>Izaberite 3 dresa klikom na njih</li>
-                    <li>Prvi izbor = 3 boda, drugi = 2 boda, treći = 1 bod</li>
+                    <li>Za svaki dres možete dodeliti 3, 2 ili 1 poen</li>
+                    <li>Morate dodeliti tačno jednom dresu 3 boda, jednom 2 boda, i jednom 1 bod</li>
                     <li>Kliknite "Glasaj" da potvrdite</li>
                 </ul>
             </div>
@@ -290,7 +306,7 @@
             </div>
 
             <button id="voteButton" class="vote-btn" onclick="submitVote()" disabled>
-                Glasaj (izaberite 3 dresa)
+                Unesite ime i dodelite poene
             </button>
 
             <div id="voteMessage"></div>
@@ -311,8 +327,7 @@
         const JSONBIN_BIN_ID = '68ab35b9d0ea881f4062e709';
 
         let currentData = null;
-        let selectedJerseys = [];
-        let selectedPoints = [3, 2, 1];
+        let selectedVotes = {}; // {3: jerseyId, 2: jerseyId, 1: jerseyId}
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
@@ -356,14 +371,19 @@
             }
 
             grid.innerHTML = currentData.jerseys.map(jersey => `
-                <div class="jersey-card" data-jersey-id="${jersey.id}" onclick="selectJersey(${jersey.id})">
+                <div class="jersey-card" data-jersey-id="${jersey.id}">
                     <img src="${jersey.image}" alt="${jersey.name}" loading="lazy">
                     <h3>${jersey.name}</h3>
+                    <div class="vote-options">
+                        <button class="point-btn" data-points="3" data-jersey="${jersey.id}" onclick="selectPoints(${jersey.id}, 3)">3</button>
+                        <button class="point-btn" data-points="2" data-jersey="${jersey.id}" onclick="selectPoints(${jersey.id}, 2)">2</button>
+                        <button class="point-btn" data-points="1" data-jersey="${jersey.id}" onclick="selectPoints(${jersey.id}, 1)">1</button>
+                    </div>
                 </div>
             `).join('');
         }
 
-        function selectJersey(jerseyId) {
+        function selectPoints(jerseyId, points) {
             const voterName = document.getElementById('voterName').value.trim();
             if (!voterName) {
                 showError('nameError', 'Prvo unesite vaše ime!');
@@ -371,46 +391,72 @@
                 return;
             }
 
-            const card = document.querySelector(`[data-jersey-id="${jerseyId}"]`);
-            const currentIndex = selectedJerseys.indexOf(jerseyId);
-
-            if (currentIndex !== -1) {
-                // Deselect jersey
-                selectedJerseys.splice(currentIndex, 1);
-                card.classList.remove('selected');
-                const badge = card.querySelector('.points-badge');
-                if (badge) badge.remove();
-            } else {
-                // Select jersey
-                if (selectedJerseys.length >= 3) {
-                    showMessage('voteMessage', 'Možete izabrati maksimalno 3 dresa!', 'error');
-                    return;
+            // Clear any existing selection for this point value
+            if (selectedVotes[points]) {
+                const prevButton = document.querySelector(`[data-jersey="${selectedVotes[points]}"][data-points="${points}"]`);
+                if (prevButton) {
+                    prevButton.classList.remove('selected');
                 }
-                
-                selectedJerseys.push(jerseyId);
-                card.classList.add('selected');
-                
-                // Add points badge
-                const badge = document.createElement('div');
-                badge.className = 'points-badge';
-                badge.textContent = selectedPoints[selectedJerseys.length - 1];
-                card.appendChild(badge);
             }
 
+            // Check if this jersey already has this point value
+            if (selectedVotes[points] === jerseyId) {
+                // Deselect
+                delete selectedVotes[points];
+                const button = document.querySelector(`[data-jersey="${jerseyId}"][data-points="${points}"]`);
+                button.classList.remove('selected');
+            } else {
+                // Select this jersey for this point value
+                selectedVotes[points] = jerseyId;
+                const button = document.querySelector(`[data-jersey="${jerseyId}"][data-points="${points}"]`);
+                button.classList.add('selected');
+            }
+
+            updateJerseyCardStyles();
             updateVoteButton();
             clearMessage('voteMessage');
+        }
+
+        function updateJerseyCardStyles() {
+            // Reset all cards
+            document.querySelectorAll('.jersey-card').forEach(card => {
+                card.classList.remove('has-vote');
+            });
+
+            // Highlight cards that have votes
+            Object.values(selectedVotes).forEach(jerseyId => {
+                const card = document.querySelector(`[data-jersey-id="${jerseyId}"]`);
+                if (card) {
+                    card.classList.add('has-vote');
+                }
+            });
+        }
+
+        function getSelectedVotes() {
+            return selectedVotes;
+        }
+
+        function validateVoteSelection() {
+            // Check if all three point values are selected
+            return selectedVotes[3] && selectedVotes[2] && selectedVotes[1];
         }
 
         function updateVoteButton() {
             const button = document.getElementById('voteButton');
             const voterName = document.getElementById('voterName').value.trim();
+            const isValidVote = validateVoteSelection();
             
-            if (selectedJerseys.length === 3 && voterName) {
+            if (isValidVote && voterName) {
                 button.disabled = false;
                 button.textContent = 'Glasaj';
             } else {
                 button.disabled = true;
-                button.textContent = `Glasaj (izaberite ${3 - selectedJerseys.length} još dresova)`;
+                if (!voterName) {
+                    button.textContent = 'Unesite ime i dodelite poene';
+                } else if (!isValidVote) {
+                    const selectedCount = Object.keys(selectedVotes).length;
+                    button.textContent = `Dodelite sve poene (${selectedCount}/3)`;
+                }
             }
         }
 
@@ -443,7 +489,10 @@
         async function submitVote() {
             const voterName = document.getElementById('voterName').value.trim();
             
-            if (!validateVoterName() || selectedJerseys.length !== 3) {
+            if (!validateVoterName() || !validateVoteSelection()) {
+                if (!validateVoteSelection()) {
+                    showMessage('voteMessage', 'Morate dodeliti tačno jednom dresu 3 boda, jednom 2 boda, i jednom 1 bod!', 'error');
+                }
                 return;
             }
 
@@ -452,12 +501,12 @@
             button.textContent = 'Šalje se...';
 
             try {
-                // Create vote object
+                // Create vote object from selectedVotes
                 const vote = {
                     voterName: voterName,
-                    votes: selectedJerseys.map((jerseyId, index) => ({
-                        jerseyId: jerseyId,
-                        points: selectedPoints[index]
+                    votes: Object.entries(selectedVotes).map(([points, jerseyId]) => ({
+                        jerseyId: parseInt(jerseyId),
+                        points: parseInt(points)
                     })),
                     timestamp: new Date().toISOString()
                 };
@@ -496,13 +545,18 @@
 
         function resetVotingForm() {
             document.getElementById('voterName').value = '';
-            selectedJerseys = [];
             
-            // Remove all selections
+            // Clear selected votes
+            selectedVotes = {};
+            
+            // Remove all button selections
+            document.querySelectorAll('.point-btn').forEach(button => {
+                button.classList.remove('selected');
+            });
+            
+            // Remove visual feedback from jersey cards
             document.querySelectorAll('.jersey-card').forEach(card => {
-                card.classList.remove('selected');
-                const badge = card.querySelector('.points-badge');
-                if (badge) badge.remove();
+                card.classList.remove('has-vote');
             });
             
             updateVoteButton();

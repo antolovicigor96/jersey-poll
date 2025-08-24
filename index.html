@@ -769,35 +769,35 @@
                 
                 <!-- JSONBin Configuration -->
                 <div class="url-sharing config-section">
-                    <h4>🔧 Database Setup (Required)</h4>
+                    <h4>🔧 Database Status</h4>
                     <div id="configStatus" style="margin-bottom: 15px; text-align: center;">
-                        <span id="connectionStatus" class="connection-status error">❌ Database Not Connected</span>
+                        <span id="connectionStatus" class="connection-status success">✅ Database Connected (Hardcoded)</span>
                     </div>
                     
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <div>
-                            <label class="url-label">JSONBin API Key:</label>
+                            <label class="url-label">JSONBin API Key (Read-Only):</label>
                             <div class="url-input-group">
-                                <input type="password" id="apiKeyInput" placeholder="$2b$10$..." class="url-input" style="font-family: monospace;">
-                                <button onclick="testConnection()" class="copy-btn" style="background: #28a745;">
-                                    🔍 Test
+                                <input type="password" id="apiKeyInput" readonly class="url-input" style="background: #f8f8f8; color: #666;">
+                                <button disabled class="copy-btn" style="background: #ccc; cursor: not-allowed;">
+                                    🔒 Fixed
                                 </button>
                             </div>
                         </div>
                         
                         <div>
-                            <label class="url-label">Bin ID (auto-created if empty):</label>
+                            <label class="url-label">Bin ID (Read-Only):</label>
                             <div class="url-input-group">
-                                <input type="text" id="binIdInput" placeholder="Will be auto-generated..." class="url-input" style="font-family: monospace;">
-                                <button onclick="saveConfig()" class="copy-btn" style="background: #007bff;">
-                                    💾 Save
+                                <input type="text" id="binIdInput" readonly class="url-input" style="background: #f8f8f8; color: #666;">
+                                <button disabled class="copy-btn" style="background: #ccc; cursor: not-allowed;">
+                                    🔒 Fixed
                                 </button>
                             </div>
                         </div>
                     </div>
                     
                     <p style="font-size: 13px; color: #666; margin-top: 15px; text-align: center;">
-                        📝 <a href="https://jsonbin.io" target="_blank" style="color: #28a745;">Create free JSONBin account</a> to get API key (30 seconds setup)
+                        🔒 <strong>Configuration is hardcoded</strong> - no setup needed!
                     </p>
                 </div>
                 
@@ -945,10 +945,10 @@
         let currentVoter = null;
         let currentMode = 'admin'; // admin, vote, results
 
-        // JSONBin configuration
+        // JSONBin configuration - Hardcoded for basketball team poll
         const JSONBIN_CONFIG = {
-            apiKey: '', // Will be set by admin
-            binId: '', // Will be set by admin
+            apiKey: '$2a$10$8WfZv9.7uTTJSQy3IUYRLObTfyA65QlExXIHfKgM0sDTvFqBFEQx6', // Hardcoded API key
+            binId: '68ab35b9d0ea881f4062e709', // Hardcoded bin ID
             baseUrl: 'https://api.jsonbin.io/v3'
         };
 
@@ -979,9 +979,17 @@
             if (hash === '#vote' || hash === '#voting') {
                 currentMode = 'vote';
                 showVoteOnlyMode();
+                // Load data for voting (bin ID is hardcoded)
+                loadFromJSONBin().then(() => {
+                    updateDisplay(); // Ensure display updates after data loads
+                });
             } else if (hash === '#results' || hash === '#result') {
                 currentMode = 'results';
                 showResultsOnlyMode();
+                // Load data for results (bin ID is hardcoded)
+                loadFromJSONBin().then(() => {
+                    updateDisplay(); // Ensure display updates after data loads
+                });
             } else {
                 currentMode = 'admin';
                 showAdminMode();
@@ -1150,33 +1158,17 @@
         }
 
         function loadStoredData() {
-            // Load config from localStorage
-            const storedApiKey = localStorage.getItem('jersey-poll-api-key');
-            const storedBinId = localStorage.getItem('jersey-poll-bin-id');
+            // Set the hardcoded values in UI fields
+            document.getElementById('apiKeyInput').value = JSONBIN_CONFIG.apiKey;
+            document.getElementById('binIdInput').value = JSONBIN_CONFIG.binId;
             
-            if (storedApiKey) {
-                JSONBIN_CONFIG.apiKey = storedApiKey;
-                document.getElementById('apiKeyInput').value = storedApiKey;
-            }
+            // Always show as connected since values are hardcoded
+            updateConnectionStatus('✅ Database Connected (Hardcoded)', 'success');
             
-            if (storedBinId && storedBinId !== 'undefined' && storedBinId !== 'null') {
-                JSONBIN_CONFIG.binId = storedBinId;
-                document.getElementById('binIdInput').value = storedBinId;
-            }
+            // Load data from JSONBin immediately
+            loadFromJSONBin();
 
-            // Check if database is configured
-            if (JSONBIN_CONFIG.apiKey && JSONBIN_CONFIG.binId) {
-                updateConnectionStatus('✅ Database Connected', 'success');
-                loadFromJSONBin();
-            } else if (JSONBIN_CONFIG.apiKey) {
-                updateConnectionStatus('⚠️ API Key Set - Bin Will Be Created', 'warning');
-                loadFromLocalStorage(); // Load local data first
-            } else {
-                updateConnectionStatus('❌ Database Not Connected', 'error');
-                loadFromLocalStorage(); // Fallback to localStorage
-            }
-
-            // Check local vote status
+            // Check local vote status (still important for preventing duplicate voting)
             const storedVote = localStorage.getItem('jersey-poll-vote');
             const storedVoter = localStorage.getItem('jersey-poll-voter-name');
             
@@ -1200,17 +1192,15 @@
         }
 
         async function loadFromJSONBin() {
-            if (!JSONBIN_CONFIG.apiKey || !JSONBIN_CONFIG.binId) {
-                console.log('Missing credentials:', { apiKey: !!JSONBIN_CONFIG.apiKey, binId: !!JSONBIN_CONFIG.binId });
-                return;
-            }
-
+            // API key and bin ID are now hardcoded, so always available
             setLoadingState(true);
-            updateConnectionStatus('🔄 Loading Data...', 'warning');
+            if (currentMode === 'admin') {
+                updateConnectionStatus('🔄 Loading Data...', 'warning');
+            }
             
             try {
                 console.log('Loading from bin:', JSONBIN_CONFIG.binId);
-                // Fixed: Remove /latest from endpoint - just use /v3/b/{binId}
+                
                 const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/b/${JSONBIN_CONFIG.binId}`, {
                     method: 'GET',
                     headers: {
@@ -1222,17 +1212,22 @@
                     const data = await response.json();
                     console.log('Loaded data:', data);
                     
-                    // JSONBin returns data directly, not wrapped in "record"
                     if (data) {
                         jerseys = data.jerseys || [];
                         votes = data.votes || [];
-                        updateConnectionStatus('✅ Data Loaded Successfully', 'success');
+                        
+                        if (currentMode === 'admin') {
+                            updateConnectionStatus('✅ Data Loaded Successfully', 'success');
+                        }
                         console.log('Loaded jerseys:', jerseys.length, 'Loaded votes:', votes.length);
                     }
                 } else if (response.status === 404) {
-                    console.log('Bin not found, creating new one...');
-                    // Bin doesn't exist yet, create it
-                    await createInitialBin();
+                    console.log('Bin not found');
+                    if (currentMode === 'admin') {
+                        await createInitialBin();
+                    } else {
+                        console.log('Poll data not found - may not be set up yet');
+                    }
                 } else {
                     const errorText = await response.text();
                     console.error('Load error:', response.status, errorText);
@@ -1240,8 +1235,12 @@
                 }
             } catch (error) {
                 console.error('LoadFromJSONBin error:', error);
-                updateConnectionStatus('⚠️ Loading Error - Using Local Cache', 'warning');
-                loadFromLocalStorage(); // Fallback
+                if (currentMode === 'admin') {
+                    updateConnectionStatus('⚠️ Loading Error - Using Local Cache', 'warning');
+                    loadFromLocalStorage(); // Fallback
+                } else {
+                    console.log('Failed to load poll data:', error.message);
+                }
             } finally {
                 setLoadingState(false);
             }
@@ -1321,7 +1320,8 @@
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Master-Key': JSONBIN_CONFIG.apiKey,
-                        'X-Bin-Name': 'jersey-poll-data'
+                        'X-Bin-Name': 'jersey-poll-data',
+                        'X-Bin-Private': 'false'  // Make bin public for voting access
                     },
                     body: JSON.stringify(initialData)
                 });
@@ -1338,7 +1338,8 @@
                     document.getElementById('binIdInput').value = newBinId;
                     localStorage.setItem('jersey-poll-bin-id', newBinId);
                     
-                    updateConnectionStatus('✅ Database Created Successfully', 'success');
+                    updateConnectionStatus('✅ Public Database Created Successfully', 'success');
+                    updateURLInputs(); // Update the voting URLs with bin ID
                     return true;
                 } else {
                     const errorText = await response.text();
@@ -1426,6 +1427,7 @@
 
         function updateURLInputs() {
             const baseURL = window.location.origin + window.location.pathname;
+            // Simple URLs since bin ID is hardcoded
             document.getElementById('votingURL').value = baseURL + '#vote';
             document.getElementById('resultsURL').value = baseURL + '#results';
         }
@@ -1499,7 +1501,13 @@
 
             if (jerseys.length === 0) {
                 if (currentMode === 'vote') {
-                    grid.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;"><h3>🏀 Poll Not Ready Yet</h3><p>The jerseys haven\'t been uploaded yet. Please check back soon!</p><p style="font-size: 14px; margin-top: 20px;">Contact the poll administrator if this message persists.</p></div>';
+                    grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #666;">
+                        <h3>🏀 Loading Jersey Designs...</h3>
+                        <p>Please wait while we load the jersey options.</p>
+                        <button onclick="debugVotingPage()" style="margin-top: 20px; padding: 10px 20px; background: #ff6b35; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            🔧 Debug Info
+                        </button>
+                    </div>`;
                 } else {
                     grid.innerHTML = '<p style="text-align: center; color: #666;">No jerseys uploaded yet. Go to Setup Jerseys tab to add some!</p>';
                 }
@@ -1894,6 +1902,35 @@
             setLoadingState(false);
             updateDisplay();
             showAdminMessage('✅ Data refreshed from database!', 'success');
+        }
+
+        // Debug function for voting page
+        function debugVotingPage() {
+            const debugInfo = {
+                currentMode: currentMode,
+                binId: JSONBIN_CONFIG.binId,
+                apiKey: JSONBIN_CONFIG.apiKey ? 'Present' : 'Missing',
+                jerseysCount: jerseys.length,
+                votesCount: votes.length,
+                currentURL: window.location.href,
+                hash: window.location.hash,
+                localStorage: {
+                    apiKey: localStorage.getItem('jersey-poll-api-key') ? 'Present' : 'Missing',
+                    binId: localStorage.getItem('jersey-poll-bin-id') || 'Missing'
+                }
+            };
+            
+            console.log('🔧 Debug Info:', debugInfo);
+            alert(`Debug Info:\n${JSON.stringify(debugInfo, null, 2)}`);
+            
+            // Try to reload data
+            console.log('🔄 Attempting to reload data...');
+            loadFromJSONBin().then(() => {
+                console.log('✅ Reload complete. Jerseys:', jerseys.length);
+                updateDisplay();
+            }).catch(error => {
+                console.error('❌ Reload failed:', error);
+            });
         }
 
         function showAdminMessage(message, type) {

@@ -1163,9 +1163,6 @@
             // Always show as connected since values are hardcoded
             updateConnectionStatus('✅ Database Connected (Hardcoded)', 'success');
             
-            // Load data from JSONBin immediately
-            loadFromJSONBin();
-
             // Check local vote status (still important for preventing duplicate voting)
             const storedVote = localStorage.getItem('jersey-poll-vote');
             const storedVoter = localStorage.getItem('jersey-poll-voter-name');
@@ -1192,12 +1189,13 @@
         async function loadFromJSONBin() {
             // API key and bin ID are now hardcoded, so always available
             setLoadingState(true);
+            console.log(`🔄 Loading data in ${currentMode} mode from bin:`, JSONBIN_CONFIG.binId);
+            
             if (currentMode === 'admin') {
                 updateConnectionStatus('🔄 Loading Data...', 'warning');
             }
             
             try {
-                console.log('Loading from bin:', JSONBIN_CONFIG.binId);
                 
                 const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/b/${JSONBIN_CONFIG.binId}`, {
                     method: 'GET',
@@ -1208,7 +1206,7 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Loaded data:', data);
+                    console.log('✅ Loaded data successfully:', data);
                     
                     // JSONBin wraps data in 'record' object
                     if (data && data.record) {
@@ -1218,7 +1216,7 @@
                         if (currentMode === 'admin') {
                             updateConnectionStatus('✅ Data Loaded Successfully', 'success');
                         }
-                        console.log('Loaded jerseys:', jerseys.length, 'Loaded votes:', votes.length);
+                        console.log(`✅ Loaded ${jerseys.length} jerseys and ${votes.length} votes in ${currentMode} mode`);
                     } else if (data) {
                         // Fallback: try direct access (in case structure changes)
                         jerseys = data.jerseys || [];
@@ -1243,7 +1241,20 @@
                     updateConnectionStatus('⚠️ Loading Error - Using Local Cache', 'warning');
                     loadFromLocalStorage(); // Fallback
                 } else {
-                    console.log('Failed to load poll data:', error.message);
+                    console.error('Failed to load poll data in vote/results mode:', error.message);
+                    // Show error message to user in voting mode
+                    if (currentMode === 'vote') {
+                        const grid = document.getElementById('votingGrid');
+                        if (grid) {
+                            grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #d32f2f;">
+                                <h3>⚠️ Loading Error</h3>
+                                <p>Unable to load jersey data: ${error.message}</p>
+                                <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ff6b35; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                    🔄 Reload Page
+                                </button>
+                            </div>`;
+                        }
+                    }
                 }
             } finally {
                 setLoadingState(false);

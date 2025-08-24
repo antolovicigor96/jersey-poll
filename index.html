@@ -383,6 +383,221 @@
             border: 1px solid #f1b0b7;
         }
 
+        .voter-badge {
+            background: #ff6b35;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .voters-section {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .voters-section h4 {
+            color: #ff6b35;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .admin-btn {
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-controls {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            border: 2px solid #ff6b35;
+            margin-top: 40px;
+            padding: 25px;
+        }
+
+        .admin-controls h3 {
+            color: #ff6b35;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-reset-votes {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .btn-reset-votes:hover {
+            background: #e55a2b;
+        }
+
+        .btn-reset-all {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-reset-all:hover {
+            background: #c82333;
+        }
+
+        .btn-export {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-export:hover {
+            background: #218838;
+        }
+
+        .url-sharing {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .url-sharing h4 {
+            color: #ff6b35;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .url-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background: #f8f8f8;
+            font-family: monospace;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .copy-btn {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: #e55a2b;
+            transform: translateY(-1px);
+        }
+
+        .copy-btn.results {
+            background: #28a745;
+        }
+
+        .copy-btn.results:hover {
+            background: #218838;
+        }
+
+        .connection-status {
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        #connectionStatus.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        #connectionStatus.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        #connectionStatus.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .config-section {
+            background: rgba(40, 167, 69, 0.1);
+            margin-bottom: 25px;
+        }
+
+        .config-section h4 {
+            color: #28a745;
+            text-align: center;
+        }
+
+        .loading-overlay {
+            position: relative;
+        }
+
+        .loading-overlay::after {
+            content: '⏳ Loading...';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .loading-overlay.loading::after {
+            display: block;
+        }
+
+        .url-label {
+            font-weight: bold;
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .url-input-group {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .url-input {
+                width: 100%;
+            }
+
+            .copy-btn {
+                width: 100%;
+            }
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -456,6 +671,119 @@
                     <!-- Jerseys will be added here -->
                 </div>
             </div>
+
+            <!-- Admin Controls -->
+            <div class="admin-controls">
+                <h3>⚙️ Admin Controls</h3>
+                
+            <!-- Admin Controls -->
+            <div class="admin-controls">
+                <h3>⚙️ Admin Controls</h3>
+                
+                <!-- JSONBin Configuration -->
+                <div class="url-sharing config-section">
+                    <h4>🔧 Database Setup (Required)</h4>
+                    <div id="configStatus" style="margin-bottom: 15px; text-align: center;">
+                        <span id="connectionStatus" class="connection-status error">❌ Database Not Connected</span>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div>
+                            <label class="url-label">JSONBin API Key:</label>
+                            <div class="url-input-group">
+                                <input type="password" id="apiKeyInput" placeholder="$2b$10$..." class="url-input" style="font-family: monospace;">
+                                <button onclick="testConnection()" class="copy-btn" style="background: #28a745;">
+                                    🔍 Test
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="url-label">Bin ID (auto-created if empty):</label>
+                            <div class="url-input-group">
+                                <input type="text" id="binIdInput" placeholder="Will be auto-generated..." class="url-input" style="font-family: monospace;">
+                                <button onclick="saveConfig()" class="copy-btn" style="background: #007bff;">
+                                    💾 Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 13px; color: #666; margin-top: 15px; text-align: center;">
+                        📝 <a href="https://jsonbin.io" target="_blank" style="color: #28a745;">Create free JSONBin account</a> to get API key (30 seconds setup)
+                    </p>
+                </div>
+                
+                <!-- URL Sharing Section -->
+                <div class="url-sharing">
+                    <h4>🔗 Share Links</h4>
+                    
+                    <div>
+                        <label class="url-label">
+                            🗳️ Voting Link (share with team):
+                        </label>
+                        <div class="url-input-group">
+                            <input type="text" id="votingURL" readonly class="url-input">
+                            <button onclick="copyURL('voting')" class="copy-btn">
+                                📋 Copy
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="url-label">
+                            📊 Results Link (share after voting ends):
+                        </label>
+                        <div class="url-input-group">
+                            <input type="text" id="resultsURL" readonly class="url-input">
+                            <button onclick="copyURL('results')" class="copy-btn results">
+                                📋 Copy
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 13px; color: #666; margin-top: 15px; text-align: center;">
+                        💡 Share the voting link first, then the results link after voting is complete
+                    </p>
+                </div>
+                
+                <div class="btn-group">
+                    <button onclick="refreshData()" class="admin-btn" style="background: #17a2b8; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                        🔄 Refresh Data
+                    </button>
+                    
+                    <button onclick="resetVotes()" class="admin-btn btn-reset-votes" style="border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                        🗳️ Reset All Votes
+                    </button>
+                    
+                    <button onclick="resetEverything()" class="admin-btn btn-reset-all" style="border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                        🔄 Reset Everything
+                    </button>
+                    
+                    <button onclick="exportResults()" class="admin-btn btn-export" style="border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                        📊 Export Results
+                    </button>
+                </div>
+                
+                <div style="text-align: center;">
+                    <p style="font-size: 14px; color: #666; margin: 5px 0;">
+                        <strong>Refresh Data:</strong> Reload latest data from database
+                    </p>
+                    <p style="font-size: 14px; color: #666; margin: 5px 0;">
+                        <strong>Reset Votes:</strong> Clears all votes, keeps jerseys
+                    </p>
+                    <p style="font-size: 14px; color: #666; margin: 5px 0;">
+                        <strong>Reset Everything:</strong> Clears votes AND removes all jerseys
+                    </p>
+                    <p style="font-size: 14px; color: #666; margin: 5px 0;">
+                        <strong>Export Results:</strong> Download voting data as JSON file
+                    </p>
+                </div>
+                
+                <div id="adminStatus" style="margin-top: 15px; text-align: center;">
+                    <!-- Status messages will appear here -->
+                </div>
+            </div>
         </div>
 
         <!-- Voting Tab -->
@@ -471,8 +799,26 @@
                 <p><strong>You must allocate all 6 points to submit your vote!</strong></p>
             </div>
 
+            <!-- Name Entry Section -->
+            <div id="nameEntrySection" style="display: none;">
+                <div style="text-align: center; background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 15px; margin-bottom: 20px;">
+                    <h3>👤 Enter Your Name</h3>
+                    <p style="margin-bottom: 20px;">Please enter your name to start voting:</p>
+                    <input type="text" id="voterName" placeholder="Your full name" style="padding: 12px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; margin-right: 10px; width: 250px;">
+                    <button onclick="startVoting()" style="padding: 12px 25px; background: #ff6b35; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                        Start Voting 🗳️
+                    </button>
+                    <p style="margin-top: 15px; font-size: 14px; color: #666;">
+                        Names are used to prevent duplicate voting and show participation.
+                    </p>
+                </div>
+            </div>
+
             <div id="votingSection">
                 <div id="votingMessage" class="message" style="display: none;"></div>
+                <div id="currentVoterDisplay" style="display: none; text-align: center; margin-bottom: 20px; padding: 15px; background: rgba(255, 107, 53, 0.1); border-radius: 10px;">
+                    <strong>🗳️ Voting as: <span id="currentVoterName"></span></strong>
+                </div>
                 <div class="voting-grid" id="votingGrid">
                     <!-- Voting options will be added here -->
                 </div>
@@ -488,6 +834,15 @@
                 <h3>🏆 Voting Results</h3>
                 <p id="voteStats">Total votes: <span id="totalVotes">0</span></p>
             </div>
+            
+            <!-- Who Voted Section -->
+            <div id="votersSection" class="voters-section">
+                <h4>👥 Who Voted (<span id="voterCount">0</span>)</h4>
+                <div id="votersList" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <!-- Voter names will appear here -->
+                </div>
+            </div>
+
             <div class="results-list" id="resultsList">
                 <!-- Results will be added here -->
             </div>
@@ -500,12 +855,92 @@
         let votes = [];
         let hasVoted = false;
         let currentVote = {};
+        let currentVoter = null;
+        let currentMode = 'admin'; // admin, vote, results
+
+        // JSONBin configuration
+        const JSONBIN_CONFIG = {
+            apiKey: '', // Will be set by admin
+            binId: '', // Will be set by admin
+            baseUrl: 'https://api.jsonbin.io/v3'
+        };
+
+        let isOnline = navigator.onLine;
+        let isLoading = false;
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
             setupEventListeners();
+            loadStoredData();
+            handleURLMode();
             updateDisplay();
+            
+            // Auto-refresh data every 30 seconds for vote and results pages
+            if (currentMode === 'vote' || currentMode === 'results') {
+                setInterval(async () => {
+                    if (!isLoading && JSONBIN_CONFIG.apiKey && JSONBIN_CONFIG.binId) {
+                        await loadFromJSONBin();
+                        updateDisplay();
+                    }
+                }, 30000);
+            }
         });
+
+        function handleURLMode() {
+            const hash = window.location.hash.toLowerCase();
+            
+            if (hash === '#vote' || hash === '#voting') {
+                currentMode = 'vote';
+                showVoteOnlyMode();
+            } else if (hash === '#results' || hash === '#result') {
+                currentMode = 'results';
+                showResultsOnlyMode();
+            } else {
+                currentMode = 'admin';
+                showAdminMode();
+            }
+        }
+
+        function showVoteOnlyMode() {
+            // Hide tab buttons and show only voting
+            document.querySelector('.tab-buttons').style.display = 'none';
+            
+            // Update header for voting mode
+            document.querySelector('h1').textContent = '🗳️ Vote for Your Favorite Jersey';
+            document.querySelector('.subtitle').textContent = 'Use the 3-2-1 point system to rank your top choices';
+            
+            // Show only vote tab
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById('vote').classList.add('active');
+        }
+
+        function showResultsOnlyMode() {
+            // Hide tab buttons and show only results
+            document.querySelector('.tab-buttons').style.display = 'none';
+            
+            // Update header for results mode
+            document.querySelector('h1').textContent = '🏆 Jersey Voting Results';
+            document.querySelector('.subtitle').textContent = 'Final standings and vote breakdown';
+            
+            // Show only results tab
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById('results').classList.add('active');
+        }
+
+        function showAdminMode() {
+            // Show all tabs and normal interface
+            document.querySelector('.tab-buttons').style.display = 'flex';
+            
+            // Reset header
+            document.querySelector('h1').textContent = '🏀 Basketball Jersey Poll';
+            document.querySelector('.subtitle').textContent = 'Vote for your favorite jersey designs using the 3-2-1 point system';
+            
+            // Show admin tab by default
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('admin').classList.add('active');
+            document.querySelector('.tab-btn').classList.add('active');
+        }
 
         function setupEventListeners() {
             const uploadInput = document.getElementById('jerseyUpload');
@@ -515,9 +950,202 @@
             const uploadSection = document.querySelector('.upload-section');
             uploadSection.addEventListener('dragover', handleDragOver);
             uploadSection.addEventListener('drop', handleDrop);
+
+            // Enter key support for name input
+            document.getElementById('voterName').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    startVoting();
+                }
+            });
+
+            // Listen for hash changes (when URL changes)
+            window.addEventListener('hashchange', function() {
+                handleURLMode();
+                updateDisplay();
+            });
+        }
+
+        function loadStoredData() {
+            // Load config from localStorage
+            const storedApiKey = localStorage.getItem('jersey-poll-api-key');
+            const storedBinId = localStorage.getItem('jersey-poll-bin-id');
+            
+            if (storedApiKey) {
+                JSONBIN_CONFIG.apiKey = storedApiKey;
+                document.getElementById('apiKeyInput').value = storedApiKey;
+            }
+            
+            if (storedBinId) {
+                JSONBIN_CONFIG.binId = storedBinId;
+                document.getElementById('binIdInput').value = storedBinId;
+            }
+
+            // Check if database is configured
+            if (JSONBIN_CONFIG.apiKey && JSONBIN_CONFIG.binId) {
+                updateConnectionStatus('✅ Database Connected', 'success');
+                loadFromJSONBin();
+            } else {
+                updateConnectionStatus('❌ Database Not Connected', 'error');
+                loadFromLocalStorage(); // Fallback to localStorage
+            }
+
+            // Check local vote status
+            const storedVote = localStorage.getItem('jersey-poll-vote');
+            const storedVoter = localStorage.getItem('jersey-poll-voter-name');
+            
+            if (storedVote && storedVoter) {
+                hasVoted = true;
+                currentVoter = storedVoter;
+            }
+        }
+
+        function loadFromLocalStorage() {
+            // Fallback to localStorage when JSONBin not configured
+            const storedVotes = localStorage.getItem('jersey-poll-all-votes');
+            if (storedVotes) {
+                votes = JSON.parse(storedVotes);
+            }
+
+            const storedJerseys = localStorage.getItem('jersey-poll-jerseys');
+            if (storedJerseys) {
+                jerseys = JSON.parse(storedJerseys);
+            }
+        }
+
+        async function loadFromJSONBin() {
+            if (!JSONBIN_CONFIG.apiKey || !JSONBIN_CONFIG.binId) return;
+
+            setLoadingState(true);
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/b/${JSONBIN_CONFIG.binId}/latest`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Master-Key': JSONBIN_CONFIG.apiKey
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.record) {
+                        jerseys = data.record.jerseys || [];
+                        votes = data.record.votes || [];
+                        updateConnectionStatus('✅ Data Loaded Successfully', 'success');
+                    }
+                } else if (response.status === 404) {
+                    // Bin doesn't exist yet, create it
+                    await createInitialBin();
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                updateConnectionStatus('⚠️ Loading Error - Using Local Cache', 'warning');
+                loadFromLocalStorage(); // Fallback
+            } finally {
+                setLoadingState(false);
+            }
+        }
+
+        async function saveToJSONBin() {
+            if (!JSONBIN_CONFIG.apiKey || !JSONBIN_CONFIG.binId) {
+                saveToLocalStorage(); // Fallback
+                return;
+            }
+
+            const data = {
+                jerseys: jerseys,
+                votes: votes,
+                lastUpdated: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/b/${JSONBIN_CONFIG.binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.apiKey
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    updateConnectionStatus('✅ Data Saved Successfully', 'success');
+                    // Also save to localStorage as backup
+                    saveToLocalStorage();
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                updateConnectionStatus('⚠️ Save Error - Saved Locally Only', 'warning');
+                saveToLocalStorage(); // Fallback
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('jersey-poll-jerseys', JSON.stringify(jerseys));
+            localStorage.setItem('jersey-poll-all-votes', JSON.stringify(votes));
+        }
+
+        async function createInitialBin() {
+            const initialData = {
+                jerseys: jerseys,
+                votes: votes,
+                created: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/b`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_CONFIG.apiKey,
+                        'X-Bin-Name': 'jersey-poll-data'
+                    },
+                    body: JSON.stringify(initialData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    JSONBIN_CONFIG.binId = data.metadata.id;
+                    document.getElementById('binIdInput').value = JSONBIN_CONFIG.binId;
+                    localStorage.setItem('jersey-poll-bin-id', JSONBIN_CONFIG.binId);
+                    updateConnectionStatus('✅ Database Created & Connected', 'success');
+                }
+            } catch (error) {
+                updateConnectionStatus('❌ Failed to Create Database', 'error');
+            }
+        }
+
+        function startVoting() {
+            const nameInput = document.getElementById('voterName');
+            const voterName = nameInput.value.trim();
+            
+            if (!voterName) {
+                alert('Please enter your name to continue!');
+                nameInput.focus();
+                return;
+            }
+
+            // Check if this name already voted
+            if (votes.some(vote => vote.voterName.toLowerCase() === voterName.toLowerCase())) {
+                alert(`${voterName} has already voted! Please use a different name if you haven't voted yet.`);
+                nameInput.focus();
+                return;
+            }
+
+            currentVoter = voterName;
+            document.getElementById('nameEntrySection').style.display = 'none';
+            document.getElementById('currentVoterDisplay').style.display = 'block';
+            document.getElementById('currentVoterName').textContent = voterName;
+            document.getElementById('votingGrid').style.display = 'grid';
+            document.getElementById('submitVote').style.display = 'block';
+            
+            updateVotingDisplay();
         }
 
         function showTab(tabName) {
+            // Only allow tab switching in admin mode
+            if (currentMode !== 'admin') return;
+
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -572,6 +1200,7 @@
                         };
                         jerseys.push(jersey);
                         updateDisplay();
+                        saveToJSONBin(); // Save to central database
                     };
                     reader.readAsDataURL(file);
                 }
@@ -581,12 +1210,37 @@
         function removeJersey(id) {
             jerseys = jerseys.filter(jersey => jersey.id !== id);
             updateDisplay();
+            saveToJSONBin(); // Save to central database
         }
 
         function updateDisplay() {
             updateJerseysGrid();
             updateVotingDisplay();
             updateResultsDisplay();
+            updateURLInputs(); // Update URL inputs in admin panel
+        }
+
+        function updateURLInputs() {
+            const baseURL = window.location.origin + window.location.pathname;
+            document.getElementById('votingURL').value = baseURL + '#vote';
+            document.getElementById('resultsURL').value = baseURL + '#results';
+        }
+
+        function copyURL(type) {
+            const inputId = type === 'voting' ? 'votingURL' : 'resultsURL';
+            const input = document.getElementById(inputId);
+            
+            input.select();
+            input.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                const buttonText = type === 'voting' ? 'Voting' : 'Results';
+                showAdminMessage(`📋 ${buttonText} URL copied to clipboard!`, 'success');
+            } catch (err) {
+                // Fallback for browsers that don't support execCommand
+                showAdminMessage(`Please manually copy the ${type} URL from the input field`, 'warning');
+            }
         }
 
         function updateJerseysGrid() {
@@ -607,19 +1261,44 @@
         function updateVotingDisplay() {
             const grid = document.getElementById('votingGrid');
             const message = document.getElementById('votingMessage');
+            const nameEntrySection = document.getElementById('nameEntrySection');
+            const currentVoterDisplay = document.getElementById('currentVoterDisplay');
 
             if (hasVoted) {
-                message.innerHTML = '<div class="success">✅ Thank you! Your vote has been submitted.</div>';
+                message.innerHTML = `<div class="success">✅ Thank you ${currentVoter}! Your vote has been submitted.</div>`;
                 message.style.display = 'block';
+                nameEntrySection.style.display = 'none';
+                currentVoterDisplay.style.display = 'block';
+                document.getElementById('currentVoterName').textContent = currentVoter;
                 grid.style.display = 'none';
                 document.getElementById('submitVote').style.display = 'none';
                 return;
             }
 
-            if (jerseys.length === 0) {
-                grid.innerHTML = '<p style="text-align: center; color: #666;">No jerseys uploaded yet. Go to Setup Jerseys tab to add some!</p>';
+            if (!currentVoter) {
+                // Show name entry form
+                nameEntrySection.style.display = 'block';
+                currentVoterDisplay.style.display = 'none';
+                grid.style.display = 'none';
+                document.getElementById('submitVote').style.display = 'none';
+                message.style.display = 'none';
                 return;
             }
+
+            if (jerseys.length === 0) {
+                if (currentMode === 'vote') {
+                    grid.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;"><h3>🏀 Poll Not Ready Yet</h3><p>The jerseys haven\'t been uploaded yet. Please check back soon!</p><p style="font-size: 14px; margin-top: 20px;">Contact the poll administrator if this message persists.</p></div>';
+                } else {
+                    grid.innerHTML = '<p style="text-align: center; color: #666;">No jerseys uploaded yet. Go to Setup Jerseys tab to add some!</p>';
+                }
+                return;
+            }
+
+            // Show voting interface
+            nameEntrySection.style.display = 'none';
+            currentVoterDisplay.style.display = 'block';
+            grid.style.display = 'grid';
+            document.getElementById('submitVote').style.display = 'block';
 
             grid.innerHTML = jerseys.map(jersey => `
                 <div class="voting-item" id="item-${jersey.id}">
@@ -682,38 +1361,151 @@
             button.disabled = totalPoints !== 6 || selectedCount !== 3;
         }
 
-        function submitVote() {
+        async function submitVote() {
             if (Object.values(currentVote).reduce((sum, points) => sum + points, 0) !== 6) {
                 alert('Please allocate exactly 6 points (3+2+1) before submitting!');
                 return;
             }
 
-            votes.push({
+            if (!currentVoter) {
+                alert('Please enter your name first!');
+                return;
+            }
+
+            const voteData = {
                 id: Date.now(),
+                voterName: currentVoter,
                 vote: {...currentVote},
                 timestamp: new Date().toISOString()
-            });
+            };
 
+            // Save vote locally first
+            localStorage.setItem('jersey-poll-vote', JSON.stringify(voteData));
+            localStorage.setItem('jersey-poll-voter-name', currentVoter);
+            
+            // Add to votes array
+            votes.push(voteData);
             hasVoted = true;
             currentVote = {};
+
+            // Save to central database
+            setLoadingState(true);
+            await saveToJSONBin();
+            setLoadingState(false);
             
             updateVotingDisplay();
             updateResultsDisplay();
             
             // Show success message
             const message = document.getElementById('votingMessage');
-            message.innerHTML = '<div class="success">🎉 Your vote has been successfully submitted! Check the Results tab to see current standings.</div>';
+            message.innerHTML = `<div class="success">🎉 Your vote has been successfully submitted, ${currentVoter}! Check the Results tab to see current standings.</div>`;
             message.style.display = 'block';
+        }
+
+        async function testConnection() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            
+            if (!apiKey) {
+                updateConnectionStatus('❌ Please enter API key', 'error');
+                return;
+            }
+
+            setLoadingState(true);
+            updateConnectionStatus('🔄 Testing connection...', 'warning');
+
+            try {
+                const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/b`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Master-Key': apiKey
+                    }
+                });
+
+                if (response.ok) {
+                    updateConnectionStatus('✅ API Key Valid!', 'success');
+                    JSONBIN_CONFIG.apiKey = apiKey;
+                    localStorage.setItem('jersey-poll-api-key', apiKey);
+                } else {
+                    updateConnectionStatus('❌ Invalid API Key', 'error');
+                }
+            } catch (error) {
+                updateConnectionStatus('❌ Connection Failed', 'error');
+            } finally {
+                setLoadingState(false);
+            }
+        }
+
+        function saveConfig() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            const binId = document.getElementById('binIdInput').value.trim();
+
+            if (!apiKey) {
+                updateConnectionStatus('❌ API Key required', 'error');
+                return;
+            }
+
+            JSONBIN_CONFIG.apiKey = apiKey;
+            localStorage.setItem('jersey-poll-api-key', apiKey);
+
+            if (binId) {
+                JSONBIN_CONFIG.binId = binId;
+                localStorage.setItem('jersey-poll-bin-id', binId);
+            }
+
+            updateConnectionStatus('💾 Configuration Saved', 'success');
+            
+            // Load data from JSONBin
+            if (JSONBIN_CONFIG.apiKey && JSONBIN_CONFIG.binId) {
+                loadFromJSONBin();
+            }
+        }
+
+        function updateConnectionStatus(message, type) {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.textContent = message;
+            statusElement.className = type;
+        }
+
+        function setLoadingState(loading) {
+            isLoading = loading;
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                if (loading) {
+                    btn.style.opacity = '0.6';
+                    btn.disabled = true;
+                } else {
+                    btn.style.opacity = '1';
+                    btn.disabled = false;
+                }
+            });
         }
 
         function updateResultsDisplay() {
             const resultsList = document.getElementById('resultsList');
             const totalVotesSpan = document.getElementById('totalVotes');
+            const votersList = document.getElementById('votersList');
+            const voterCount = document.getElementById('voterCount');
             
             totalVotesSpan.textContent = votes.length;
+            voterCount.textContent = votes.length;
+
+            // Update who voted section
+            if (votes.length === 0) {
+                votersList.innerHTML = '<span style="color: #666; font-style: italic;">No votes yet</span>';
+            } else {
+                votersList.innerHTML = votes.map(vote => 
+                    `<span style="background: #ff6b35; color: white; padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: bold;">
+                        👤 ${vote.voterName}
+                    </span>`
+                ).join('');
+            }
 
             if (votes.length === 0) {
-                resultsList.innerHTML = '<p style="text-align: center; color: #666;">No votes submitted yet.</p>';
+                if (currentMode === 'results') {
+                    resultsList.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;"><h3>📊 No Results Yet</h3><p>Voting is still in progress or hasn\'t started yet.</p><p style="font-size: 14px; margin-top: 20px;">Results will appear here once people start voting!</p></div>';
+                } else {
+                    resultsList.innerHTML = '<p style="text-align: center; color: #666;">No votes submitted yet.</p>';
+                }
                 return;
             }
 
@@ -723,7 +1515,8 @@
                 scores[jersey.id] = {
                     jersey: jersey,
                     totalPoints: 0,
-                    voteBreakdown: { 3: 0, 2: 0, 1: 0 }
+                    voteBreakdown: { 3: 0, 2: 0, 1: 0 },
+                    voterDetails: { 3: [], 2: [], 1: [] }
                 };
             });
 
@@ -733,6 +1526,7 @@
                     if (scores[jerseyId]) {
                         scores[jerseyId].totalPoints += points;
                         scores[jerseyId].voteBreakdown[points]++;
+                        scores[jerseyId].voterDetails[points].push(vote.voterName);
                     }
                 });
             });
@@ -753,9 +1547,9 @@
                         <div class="result-info">
                             <div class="result-name">${result.jersey.name}</div>
                             <div class="result-details">
-                                1st place votes: ${result.voteBreakdown[3]} • 
-                                2nd place votes: ${result.voteBreakdown[2]} • 
-                                3rd place votes: ${result.voteBreakdown[1]}
+                                🥇 ${result.voteBreakdown[3]} votes (${result.voterDetails[3].join(', ')}) • 
+                                🥈 ${result.voteBreakdown[2]} votes (${result.voterDetails[2].join(', ')}) • 
+                                🥉 ${result.voteBreakdown[1]} votes (${result.voterDetails[1].join(', ')})
                             </div>
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: ${percentage}%"></div>
@@ -768,18 +1562,119 @@
         }
 
         // Export/Import functionality for sharing results
-        function exportData() {
+        function exportResults() {
+            if (votes.length === 0 && jerseys.length === 0) {
+                showAdminMessage('No data to export!', 'warning');
+                return;
+            }
+
             const data = {
                 jerseys: jerseys,
                 votes: votes,
-                timestamp: new Date().toISOString()
+                summary: {
+                    totalVotes: votes.length,
+                    totalJerseys: jerseys.length,
+                    voters: votes.map(v => v.voterName),
+                    exportDate: new Date().toISOString()
+                }
             };
+
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'jersey-poll-results.json';
+            a.download = `jersey-poll-results-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
+            URL.revokeObjectURL(url);
+
+            showAdminMessage('✅ Results exported successfully!', 'success');
+        }
+
+        async function resetVotes() {
+            if (votes.length === 0) {
+                showAdminMessage('No votes to reset!', 'warning');
+                return;
+            }
+
+            const voterCount = votes.length;
+            const voterNames = votes.map(v => v.voterName).join(', ');
+            
+            if (confirm(`Are you sure you want to delete all ${voterCount} votes?\n\nThis will remove votes from: ${voterNames}\n\nThis action cannot be undone!`)) {
+                // Clear all vote data
+                votes = [];
+                hasVoted = false;
+                currentVote = {};
+                currentVoter = null;
+
+                // Clear localStorage vote data
+                localStorage.removeItem('jersey-poll-vote');
+                localStorage.removeItem('jersey-poll-voter-name');
+                localStorage.removeItem('jersey-poll-all-votes');
+
+                // Save to JSONBin
+                setLoadingState(true);
+                await saveToJSONBin();
+                setLoadingState(false);
+
+                // Update displays
+                updateDisplay();
+                
+                showAdminMessage('✅ All votes have been reset! People can now vote again.', 'success');
+            }
+        }
+
+        async function resetEverything() {
+            if (votes.length === 0 && jerseys.length === 0) {
+                showAdminMessage('Nothing to reset!', 'warning');
+                return;
+            }
+
+            const voterCount = votes.length;
+            const jerseyCount = jerseys.length;
+            
+            if (confirm(`⚠️ DANGER ZONE ⚠️\n\nThis will permanently delete:\n• All ${voterCount} votes\n• All ${jerseyCount} jersey designs\n\nYou'll need to re-upload jerseys and start over.\n\nAre you absolutely sure?`)) {
+                // Clear everything
+                votes = [];
+                jerseys = [];
+                hasVoted = false;
+                currentVote = {};
+                currentVoter = null;
+
+                // Clear all localStorage
+                localStorage.removeItem('jersey-poll-vote');
+                localStorage.removeItem('jersey-poll-voter-name');
+                localStorage.removeItem('jersey-poll-all-votes');
+                localStorage.removeItem('jersey-poll-jerseys');
+
+                // Save to JSONBin
+                setLoadingState(true);
+                await saveToJSONBin();
+                setLoadingState(false);
+
+                // Update displays
+                updateDisplay();
+                
+                showAdminMessage('🔄 Everything has been reset! Upload jerseys to start fresh.', 'success');
+            }
+        }
+
+        async function refreshData() {
+            showAdminMessage('🔄 Refreshing data...', 'warning');
+            setLoadingState(true);
+            await loadFromJSONBin();
+            setLoadingState(false);
+            updateDisplay();
+            showAdminMessage('✅ Data refreshed from database!', 'success');
+        }
+
+        function showAdminMessage(message, type) {
+            const statusDiv = document.getElementById('adminStatus');
+            statusDiv.innerHTML = `<div class="${type}" style="display: inline-block; padding: 10px 20px; border-radius: 8px; font-weight: bold;">${message}</div>`;
+            
+            // Clear message after 5 seconds
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 5000);
         }
     </script>
 </body>

@@ -65,6 +65,10 @@
             color: white;
         }
 
+        .nav-btn.hidden {
+            display: none;
+        }
+
         .view {
             display: none;
             background: white;
@@ -288,7 +292,7 @@
 
         <div class="nav-buttons">
             <button class="nav-btn active" onclick="showView('voting')">Glasanje</button>
-            <button class="nav-btn" onclick="showView('results')">Rezultati</button>
+            <button id="resultsBtn" class="nav-btn hidden" onclick="showView('results')">Rezultati</button>
         </div>
 
         <!-- Voting View -->
@@ -398,15 +402,27 @@
                 return;
             }
 
-            // Clear any existing selection for this point value
-            if (selectedVotes[points]) {
+            // Check if this jersey already has any other point value assigned
+            Object.keys(selectedVotes).forEach(existingPoints => {
+                if (selectedVotes[existingPoints] === jerseyId && existingPoints != points) {
+                    // Remove the previous selection from this jersey
+                    const prevButton = document.querySelector(`[data-jersey="${jerseyId}"][data-points="${existingPoints}"]`);
+                    if (prevButton) {
+                        prevButton.classList.remove('selected');
+                    }
+                    delete selectedVotes[existingPoints];
+                }
+            });
+
+            // Clear any existing selection for this point value from other jerseys
+            if (selectedVotes[points] && selectedVotes[points] !== jerseyId) {
                 const prevButton = document.querySelector(`[data-jersey="${selectedVotes[points]}"][data-points="${points}"]`);
                 if (prevButton) {
                     prevButton.classList.remove('selected');
                 }
             }
 
-            // Check if this jersey already has this point value
+            // Check if this jersey already has this exact point value
             if (selectedVotes[points] === jerseyId) {
                 // Deselect
                 delete selectedVotes[points];
@@ -449,6 +465,13 @@
             const voterName = document.getElementById('voterName').value.trim();
             const isValidVote = validateVoteSelection();
             
+            // Special handling for admin
+            if (voterName === 'admin888') {
+                button.disabled = true;
+                button.textContent = 'Admin - Koristite "Rezultati" dugme';
+                return;
+            }
+            
             if (isValidVote && voterName) {
                 button.disabled = false;
                 button.textContent = 'Glasaj';
@@ -466,11 +489,26 @@
         function validateVoterName() {
             const voterName = document.getElementById('voterName').value.trim();
             const nameError = document.getElementById('nameError');
+            const resultsBtn = document.getElementById('resultsBtn');
+            
+            // Show/hide results button based on admin code
+            if (voterName === 'admin888') {
+                resultsBtn.classList.remove('hidden');
+            } else {
+                resultsBtn.classList.add('hidden');
+            }
             
             if (!voterName) {
                 clearError('nameError');
                 updateVoteButton();
                 return;
+            }
+
+            // Don't check for duplicate if it's admin
+            if (voterName === 'admin888') {
+                clearError('nameError');
+                updateVoteButton();
+                return true;
             }
 
             // Check if name already exists
@@ -491,6 +529,12 @@
 
         async function submitVote() {
             const voterName = document.getElementById('voterName').value.trim();
+            
+            // Prevent admin from voting
+            if (voterName === 'admin888') {
+                showMessage('voteMessage', 'Admin ne može da glasa. Koristite "Rezultati" dugme za pregled.', 'error');
+                return;
+            }
             
             if (!validateVoterName() || !validateVoteSelection()) {
                 if (!validateVoteSelection()) {
@@ -549,6 +593,9 @@
         function resetVotingForm() {
             document.getElementById('voterName').value = '';
             
+            // Hide results button again
+            document.getElementById('resultsBtn').classList.add('hidden');
+            
             // Clear selected votes
             selectedVotes = {};
             
@@ -587,8 +634,13 @@
             // Calculate scores
             currentData.votes.forEach(vote => {
                 vote.votes.forEach(v => {
-                    jerseyScores[v.jerseyId] += v.points;
-                    jerseyVoteDetails[v.jerseyId][v.points]++;
+                    // Make sure this jersey exists in our data
+                    if (jerseyScores.hasOwnProperty(v.jerseyId)) {
+                        jerseyScores[v.jerseyId] += v.points;
+                        jerseyVoteDetails[v.jerseyId][v.points]++;
+                    } else {
+                        console.warn('Vote for unknown jersey ID:', v.jerseyId);
+                    }
                 });
             });
 

@@ -93,7 +93,7 @@
             text-align: center;
             margin-bottom: 30px;
             padding: 30px;
-            border: 3px dashed #ff6b35;
+            border: 3px solid #ff6b35;
             border-radius: 15px;
             background: rgba(255, 107, 53, 0.05);
         }
@@ -102,8 +102,8 @@
             background: #ff6b35;
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
+            padding: 15px 25px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
@@ -113,6 +113,74 @@
         .upload-btn:hover {
             background: #e55a2b;
             transform: translateY(-2px);
+        }
+
+        .jersey-url-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .jersey-input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .jersey-input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .jersey-input:focus {
+            outline: none;
+            border-color: #ff6b35;
+        }
+
+        .jersey-name-input {
+            flex: 2;
+        }
+
+        .jersey-url-input {
+            flex: 3;
+        }
+
+        .url-preview {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .url-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .url-instructions {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .url-instructions p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .url-instructions a {
+            color: #ff6b35;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .url-instructions a:hover {
+            text-decoration: underline;
         }
 
         .jerseys-grid {
@@ -655,14 +723,33 @@
         <div id="admin" class="tab-content active">
             <div class="upload-section">
                 <h3>Add Jersey Designs</h3>
-                <p>Upload images of your jersey designs (JPG, PNG, GIF supported)</p>
-                <input type="file" id="jerseyUpload" accept="image/*" multiple style="display: none;">
-                <button class="upload-btn" onclick="document.getElementById('jerseyUpload').click()">
-                    📁 Upload Jersey Images
-                </button>
-                <p style="margin-top: 10px; color: #666; font-size: 14px;">
-                    You can also drag and drop images directly onto this area
-                </p>
+                <p>Add jersey images using Imgur or other image hosting URLs</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 15px; max-width: 600px; margin: 0 auto;">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="jerseyNameInput" placeholder="Jersey name (e.g., 'Home Red', 'Away Blue')" style="flex: 2; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px;">
+                        <input type="url" id="jerseyUrlInput" placeholder="Image URL (https://i.imgur.com/...)" style="flex: 3; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px;">
+                        <button onclick="addJerseyByUrl()" class="upload-btn" style="white-space: nowrap;">
+                            ➕ Add Jersey
+                        </button>
+                    </div>
+                    
+                    <div id="urlPreview" style="text-align: center; display: none;">
+                        <img id="previewImg" style="max-width: 200px; max-height: 200px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <p style="color: #666; margin-top: 10px; font-size: 14px;">Preview - Click "Add Jersey" if this looks correct</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                        💡 <strong>How to get image URLs:</strong>
+                    </p>
+                    <p style="color: #666; font-size: 13px;">
+                        1. Upload to <a href="https://imgur.com" target="_blank" style="color: #ff6b35;">Imgur</a> → Right-click image → "Copy image address"<br>
+                        2. Or use Google Drive, Dropbox public links<br>
+                        3. URL should end with .jpg, .png, .gif etc.
+                    </p>
+                </div>
             </div>
             
             <div id="jerseysList">
@@ -773,7 +860,7 @@
                         <strong>Reset Votes:</strong> Clears all votes, keeps jerseys
                     </p>
                     <p style="font-size: 14px; color: #666; margin: 5px 0;">
-                        <strong>Reset Everything:</strong> Clears votes AND removes all jerseys
+                        <strong>Reset Everything:</strong> Clears votes AND removes all jersey URLs
                     </p>
                     <p style="font-size: 14px; color: #666; margin: 5px 0;">
                         <strong>Export Results:</strong> Download voting data as JSON file
@@ -943,13 +1030,29 @@
         }
 
         function setupEventListeners() {
-            const uploadInput = document.getElementById('jerseyUpload');
-            uploadInput.addEventListener('change', handleFileUpload);
+            // Enter key support for jersey URL input
+            document.getElementById('jerseyUrlInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addJerseyByUrl();
+                }
+            });
 
-            // Drag and drop functionality
-            const uploadSection = document.querySelector('.upload-section');
-            uploadSection.addEventListener('dragover', handleDragOver);
-            uploadSection.addEventListener('drop', handleDrop);
+            // Enter key support for jersey name input
+            document.getElementById('jerseyNameInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addJerseyByUrl();
+                }
+            });
+
+            // URL input preview
+            document.getElementById('jerseyUrlInput').addEventListener('input', function(e) {
+                const url = e.target.value.trim();
+                if (url && isValidImageUrl(url)) {
+                    showImagePreview(url);
+                } else {
+                    hideImagePreview();
+                }
+            });
 
             // Enter key support for name input
             document.getElementById('voterName').addEventListener('keypress', function(e) {
@@ -963,6 +1066,87 @@
                 handleURLMode();
                 updateDisplay();
             });
+        }
+
+        function isValidImageUrl(url) {
+            try {
+                const urlObj = new URL(url);
+                return /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(urlObj.pathname) || 
+                       url.includes('imgur.com') || 
+                       url.includes('i.imgur.com');
+            } catch {
+                return false;
+            }
+        }
+
+        function showImagePreview(url) {
+            const preview = document.getElementById('urlPreview');
+            const img = document.getElementById('previewImg');
+            
+            img.src = url;
+            img.onload = () => {
+                preview.style.display = 'block';
+            };
+            img.onerror = () => {
+                hideImagePreview();
+            };
+        }
+
+        function hideImagePreview() {
+            document.getElementById('urlPreview').style.display = 'none';
+        }
+
+        function addJerseyByUrl() {
+            const nameInput = document.getElementById('jerseyNameInput');
+            const urlInput = document.getElementById('jerseyUrlInput');
+            
+            const name = nameInput.value.trim();
+            const url = urlInput.value.trim();
+            
+            if (!name) {
+                alert('Please enter a jersey name!');
+                nameInput.focus();
+                return;
+            }
+            
+            if (!url) {
+                alert('Please enter an image URL!');
+                urlInput.focus();
+                return;
+            }
+            
+            if (!isValidImageUrl(url)) {
+                alert('Please enter a valid image URL (should end with .jpg, .png, .gif, etc.)');
+                urlInput.focus();
+                return;
+            }
+            
+            // Check for duplicate names
+            if (jerseys.some(jersey => jersey.name.toLowerCase() === name.toLowerCase())) {
+                alert(`A jersey named "${name}" already exists! Please use a different name.`);
+                nameInput.focus();
+                return;
+            }
+            
+            const jersey = {
+                id: Date.now() + Math.random(),
+                name: name,
+                image: url
+            };
+            
+            jerseys.push(jersey);
+            
+            // Clear inputs
+            nameInput.value = '';
+            urlInput.value = '';
+            hideImagePreview();
+            
+            // Update display and save
+            updateDisplay();
+            saveToJSONBin();
+            
+            // Show success message
+            showAdminMessage(`✅ Added jersey: ${name}`, 'success');
         }
 
         function loadStoredData() {
@@ -1026,7 +1210,8 @@
             
             try {
                 console.log('Loading from bin:', JSONBIN_CONFIG.binId);
-                const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/b/${JSONBIN_CONFIG.binId}/latest`, {
+                // Fixed: Remove /latest from endpoint - just use /v3/b/{binId}
+                const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/b/${JSONBIN_CONFIG.binId}`, {
                     method: 'GET',
                     headers: {
                         'X-Master-Key': JSONBIN_CONFIG.apiKey
@@ -1037,10 +1222,12 @@
                     const data = await response.json();
                     console.log('Loaded data:', data);
                     
-                    if (data.record) {
-                        jerseys = data.record.jerseys || [];
-                        votes = data.record.votes || [];
+                    // JSONBin returns data directly, not wrapped in "record"
+                    if (data) {
+                        jerseys = data.jerseys || [];
+                        votes = data.votes || [];
                         updateConnectionStatus('✅ Data Loaded Successfully', 'success');
+                        console.log('Loaded jerseys:', jerseys.length, 'Loaded votes:', votes.length);
                     }
                 } else if (response.status === 404) {
                     console.log('Bin not found, creating new one...');
@@ -1220,47 +1407,14 @@
             }
         }
 
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const files = Array.from(e.dataTransfer.files);
-            processFiles(files);
-        }
-
-        function handleFileUpload(e) {
-            const files = Array.from(e.target.files);
-            processFiles(files);
-        }
-
-        function processFiles(files) {
-            files.forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const jersey = {
-                            id: Date.now() + Math.random(),
-                            name: file.name.replace(/\.[^/.]+$/, ""), // Remove file extension
-                            image: e.target.result
-                        };
-                        jerseys.push(jersey);
-                        updateDisplay();
-                        saveToJSONBin(); // Save to central database
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-
         function removeJersey(id) {
-            jerseys = jerseys.filter(jersey => jersey.id !== id);
-            updateDisplay();
-            saveToJSONBin(); // Save to central database
+            const jersey = jerseys.find(j => j.id == id);
+            if (jersey && confirm(`Are you sure you want to remove "${jersey.name}"?`)) {
+                jerseys = jerseys.filter(jersey => jersey.id != id);
+                updateDisplay();
+                saveToJSONBin();
+                showAdminMessage(`🗑️ Removed jersey: ${jersey.name}`, 'success');
+            }
         }
 
         function updateDisplay() {
@@ -1301,7 +1455,15 @@
             
             grid.innerHTML = jerseys.map(jersey => `
                 <div class="jersey-item">
-                    <img src="${jersey.image}" alt="${jersey.name}" class="jersey-img">
+                    <img src="${jersey.image}" 
+                         alt="${jersey.name}" 
+                         class="jersey-img"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                         onload="this.style.display='block'; this.nextElementSibling.style.display='none';">
+                    <div class="jersey-img-error" style="display: none;">
+                        <div>❌ Image failed to load</div>
+                        <div style="font-size: 12px; margin-top: 5px;">Check URL: ${jersey.image.substring(0, 30)}...</div>
+                    </div>
                     <div class="jersey-name">${jersey.name}</div>
                     <button class="remove-btn" onclick="removeJersey('${jersey.id}')">&times;</button>
                 </div>

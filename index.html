@@ -1005,6 +1005,12 @@
             // Show only vote tab
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.getElementById('vote').classList.add('active');
+            
+            // Ensure name entry section is visible if no current voter
+            if (!currentVoter && !hasVoted) {
+                console.log('🔧 Ensuring name entry section is visible');
+                document.getElementById('nameEntrySection').style.display = 'block';
+            }
         }
 
         function showResultsOnlyMode() {

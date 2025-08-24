@@ -1212,14 +1212,20 @@
                     const data = await response.json();
                     console.log('Loaded data:', data);
                     
-                    if (data) {
-                        jerseys = data.jerseys || [];
-                        votes = data.votes || [];
+                    // JSONBin wraps data in 'record' object
+                    if (data && data.record) {
+                        jerseys = data.record.jerseys || [];
+                        votes = data.record.votes || [];
                         
                         if (currentMode === 'admin') {
                             updateConnectionStatus('✅ Data Loaded Successfully', 'success');
                         }
                         console.log('Loaded jerseys:', jerseys.length, 'Loaded votes:', votes.length);
+                    } else if (data) {
+                        // Fallback: try direct access (in case structure changes)
+                        jerseys = data.jerseys || [];
+                        votes = data.votes || [];
+                        console.log('Loaded jerseys (direct):', jerseys.length, 'Loaded votes (direct):', votes.length);
                     }
                 } else if (response.status === 404) {
                     console.log('Bin not found');

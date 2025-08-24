@@ -255,6 +255,27 @@
             margin: 10px 0;
         }
 
+        .voting-complete {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+            border-radius: 15px;
+            border: 2px solid #4caf50;
+        }
+
+        .voting-complete h2 {
+            color: #2e7d32;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .voting-complete p {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -297,30 +318,41 @@
 
         <!-- Voting View -->
         <div id="voting-view" class="view active">
-            <div class="instructions">
-                <h3>📝 Instrukcije za glasanje:</h3>
-                <ul>
-                    <li>Unesite svoje ime (mora biti jedinstveno)</li>
-                    <li>Kliknite dugmad ispod dresova da dodelite poene</li>
-                    <li>Morate dodeliti tačno jednom dresu 3 boda, jednom 2 boda, i jednom 1 bod</li>
-                    <li>Kliknite "Glasaj" da potvrdite</li>
-                </ul>
+            <div id="voting-interface">
+                <div class="instructions">
+                    <h3>📝 Instrukcije za glasanje:</h3>
+                    <ul>
+                        <li>Unesite svoje ime (mora biti jedinstveno)</li>
+                        <li>Kliknite dugmad ispod dresova da dodelite poene</li>
+                        <li>Morate dodeliti tačno jednom dresu 3 boda, jednom 2 boda, i jednom 1 bod</li>
+                        <li>Kliknite "Glasaj" da potvrdite</li>
+                    </ul>
+                </div>
+
+                <div class="voter-form">
+                    <input type="text" id="voterName" placeholder="Unesite vaše ime..." maxlength="50">
+                    <div id="nameError" class="error" style="display: none;"></div>
+                </div>
+
+                <div id="jerseyGrid" class="jersey-grid">
+                    <!-- Jerseys will be loaded here -->
+                </div>
+
+                <button id="voteButton" class="vote-btn" onclick="submitVote()" disabled>
+                    Unesite ime i dodelite poene
+                </button>
+
+                <div id="voteMessage"></div>
             </div>
 
-            <div class="voter-form">
-                <input type="text" id="voterName" placeholder="Unesite vaše ime..." maxlength="50">
-                <div id="nameError" class="error" style="display: none;"></div>
+            <div id="voting-success" class="voting-complete" style="display: none;">
+                <h2>🎉 Hvala na glasanju!</h2>
+                <p><strong id="successVoterName"></strong>, vaš glas je uspešno zabeležen za Giganti dresove!</p>
+                <p>Vaš glas je važan za naš tim. Hvala što ste učestvovali u glasanju! 🏀</p>
+                <p style="margin-top: 30px; font-style: italic; color: #666;">
+                    Glasanje je ograničeno na jedan glas po osobi.
+                </p>
             </div>
-
-            <div id="jerseyGrid" class="jersey-grid">
-                <!-- Jerseys will be loaded here -->
-            </div>
-
-            <button id="voteButton" class="vote-btn" onclick="submitVote()" disabled>
-                Unesite ime i dodelite poene
-            </button>
-
-            <div id="voteMessage"></div>
         </div>
 
         <!-- Results View -->
@@ -339,6 +371,7 @@
 
         let currentData = null;
         let selectedVotes = {}; // {3: jerseyId, 2: jerseyId, 1: jerseyId}
+        let hasVotedSuccessfully = false;
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
@@ -576,10 +609,8 @@
                     throw new Error('Failed to save vote');
                 }
 
-                showMessage('voteMessage', `Hvala ${voterName}! Vaš glas je uspešno zabeležen! 🎉`, 'success');
-                
-                // Reset form
-                resetVotingForm();
+                // Show success state
+                showVotingSuccess(voterName);
                 renderResults();
 
             } catch (error) {
@@ -588,6 +619,18 @@
                 button.disabled = false;
                 button.textContent = 'Glasaj';
             }
+        }
+
+        function showVotingSuccess(voterName) {
+            // Set flag to track successful vote
+            hasVotedSuccessfully = true;
+            
+            // Hide voting interface
+            document.getElementById('voting-interface').style.display = 'none';
+            
+            // Show success message
+            document.getElementById('successVoterName').textContent = voterName;
+            document.getElementById('voting-success').style.display = 'block';
         }
 
         function resetVotingForm() {
@@ -710,6 +753,15 @@
             // Show/hide views
             document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
             document.getElementById(`${viewName}-view`).classList.add('active');
+
+            // If switching to voting view and user has already voted, show success screen
+            if (viewName === 'voting' && hasVotedSuccessfully) {
+                document.getElementById('voting-interface').style.display = 'none';
+                document.getElementById('voting-success').style.display = 'block';
+            } else if (viewName === 'voting' && !hasVotedSuccessfully) {
+                document.getElementById('voting-interface').style.display = 'block';
+                document.getElementById('voting-success').style.display = 'none';
+            }
 
             // Refresh results if showing results view
             if (viewName === 'results') {

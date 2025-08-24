@@ -149,11 +149,12 @@
             background: #f0f0f0;
             border: 2px solid #ddd;
             border-radius: 8px;
-            padding: 8px 12px;
+            padding: 10px 15px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-width: 45px;
+            min-width: 50px;
+            font-size: 16px;
         }
 
         .point-btn:hover {
@@ -269,6 +270,12 @@
                 font-size: 14px;
                 margin: 5px;
             }
+
+            .point-btn {
+                padding: 8px 12px;
+                min-width: 40px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -290,7 +297,7 @@
                 <h3>📝 Instrukcije za glasanje:</h3>
                 <ul>
                     <li>Unesite svoje ime (mora biti jedinstveno)</li>
-                    <li>Za svaki dres možete dodeliti 3, 2 ili 1 poen</li>
+                    <li>Kliknite dugmad ispod dresova da dodelite poene</li>
                     <li>Morate dodeliti tačno jednom dresu 3 boda, jednom 2 boda, i jednom 1 bod</li>
                     <li>Kliknite "Glasaj" da potvrdite</li>
                 </ul>
@@ -430,10 +437,6 @@
                     card.classList.add('has-vote');
                 }
             });
-        }
-
-        function getSelectedVotes() {
-            return selectedVotes;
         }
 
         function validateVoteSelection() {

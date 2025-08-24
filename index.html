@@ -960,7 +960,12 @@
             setupEventListeners();
             loadStoredData();
             await handleURLMode();
-            updateDisplay();
+            
+            // Ensure display is updated after initialization
+            setTimeout(() => {
+                console.log('🔄 Final display update after init');
+                updateDisplay();
+            }, 200);
             
             // Auto-refresh data every 30 seconds for vote and results pages
             if (currentMode === 'vote' || currentMode === 'results') {
@@ -1216,8 +1221,13 @@
                     
                     // JSONBin wraps data in 'record' object
                     if (data && data.record) {
-                        jerseys = data.record.jerseys || [];
-                        votes = data.record.votes || [];
+                        const loadedJerseys = data.record.jerseys || [];
+                        const loadedVotes = data.record.votes || [];
+                        
+                        console.log('📦 Raw jerseys from API:', loadedJerseys);
+                        
+                        jerseys = loadedJerseys;
+                        votes = loadedVotes;
                         
                         if (currentMode === 'admin') {
                             updateConnectionStatus('✅ Data Loaded Successfully', 'success');
@@ -1440,10 +1450,16 @@
         }
 
         function updateDisplay() {
-            updateJerseysGrid();
-            updateVotingDisplay();
-            updateResultsDisplay();
-            updateURLInputs(); // Update URL inputs in admin panel
+            console.log('📱 updateDisplay called for mode:', currentMode);
+            
+            if (currentMode === 'admin') {
+                updateJerseysGrid();
+                updateURLInputs(); // Update URL inputs in admin panel
+            } else if (currentMode === 'vote') {
+                updateVotingDisplay();
+            } else if (currentMode === 'results') {
+                updateResultsDisplay();
+            }
         }
 
         function updateURLInputs() {
@@ -1498,8 +1514,15 @@
                 hasVoted: hasVoted,
                 currentVoter: currentVoter,
                 jerseysCount: jerseys.length,
-                currentMode: currentMode
+                currentMode: currentMode,
+                isLoading: isLoading
             });
+            
+            // Don't update display while loading
+            if (isLoading) {
+                console.log('⏳ Skipping display update - still loading');
+                return;
+            }
 
             const grid = document.getElementById('votingGrid');
             const message = document.getElementById('votingMessage');
@@ -1544,9 +1567,19 @@
             if (!currentVoter) {
                 console.log('👤 No current voter - showing name entry form');
                 nameEntrySection.style.display = 'block';
+                nameEntrySection.style.visibility = 'visible';
+                nameEntrySection.style.opacity = '1';
                 currentVoterDisplay.style.display = 'none';
                 grid.style.display = 'none';
                 submitButton.style.display = 'none';
+                
+                // Force focus on name input after a short delay
+                setTimeout(() => {
+                    const nameInput = document.getElementById('voterName');
+                    if (nameInput) {
+                        nameInput.focus();
+                    }
+                }, 100);
                 return;
             }
 

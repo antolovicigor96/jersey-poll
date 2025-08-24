@@ -956,10 +956,10 @@
         let isLoading = false;
 
         // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             setupEventListeners();
             loadStoredData();
-            handleURLMode();
+            await handleURLMode();
             updateDisplay();
             
             // Auto-refresh data every 30 seconds for vote and results pages
@@ -973,23 +973,21 @@
             }
         });
 
-        function handleURLMode() {
+        async function handleURLMode() {
             const hash = window.location.hash.toLowerCase();
             
             if (hash === '#vote' || hash === '#voting') {
                 currentMode = 'vote';
                 showVoteOnlyMode();
                 // Load data for voting (bin ID is hardcoded)
-                loadFromJSONBin().then(() => {
-                    updateDisplay(); // Ensure display updates after data loads
-                });
+                await loadFromJSONBin();
+                updateDisplay(); // Ensure display updates after data loads
             } else if (hash === '#results' || hash === '#result') {
                 currentMode = 'results';
                 showResultsOnlyMode();
                 // Load data for results (bin ID is hardcoded)
-                loadFromJSONBin().then(() => {
-                    updateDisplay(); // Ensure display updates after data loads
-                });
+                await loadFromJSONBin();
+                updateDisplay(); // Ensure display updates after data loads
             } else {
                 currentMode = 'admin';
                 showAdminMode();
@@ -1070,8 +1068,8 @@
             });
 
             // Listen for hash changes (when URL changes)
-            window.addEventListener('hashchange', function() {
-                handleURLMode();
+            window.addEventListener('hashchange', async function() {
+                await handleURLMode();
                 updateDisplay();
             });
         }
@@ -1516,13 +1514,24 @@
             if (jerseys.length === 0) {
                 console.log('🏀 No jerseys available');
                 if (currentMode === 'vote') {
-                    grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #666;">
-                        <h3>🏀 Loading Jersey Designs...</h3>
-                        <p>Please wait while we load the jersey options.</p>
-                        <button onclick="debugVotingPage()" style="margin-top: 20px; padding: 10px 20px; background: #ff6b35; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                            🔧 Debug Info
-                        </button>
-                    </div>`;
+                    if (isLoading) {
+                        grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #666;">
+                            <h3>🏀 Loading Jersey Designs...</h3>
+                            <p>Please wait while we load the jersey options from the database.</p>
+                            <div style="margin: 20px 0;">⏳ Loading...</div>
+                        </div>`;
+                    } else {
+                        grid.innerHTML = `<div style="text-align: center; padding: 40px; color: #666;">
+                            <h3>🏀 No Jersey Designs Available</h3>
+                            <p>The poll administrator hasn't uploaded any jersey designs yet.</p>
+                            <button onclick="debugVotingPage()" style="margin-top: 20px; padding: 10px 20px; background: #ff6b35; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                🔧 Debug Info
+                            </button>
+                            <button onclick="location.reload()" style="margin-top: 10px; padding: 10px 20px; background: #17a2b8; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                🔄 Refresh Page
+                            </button>
+                        </div>`;
+                    }
                 } else {
                     grid.innerHTML = '<p style="text-align: center; color: #666;">No jerseys uploaded yet. Go to Setup Jerseys tab to add some!</p>';
                 }

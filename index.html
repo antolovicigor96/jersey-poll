@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Jersey Poll</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #d2691e;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn.active {
+            background: #ff6b35;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Admin Tab Styles */
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            border: 3px dashed #ff6b35;
+            border-radius: 15px;
+            background: rgba(255, 107, 53, 0.05);
+        }
+
+        .upload-btn {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+        }
+
+        .jerseys-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .jersey-item {
+            position: relative;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .jersey-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .jersey-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .jersey-name {
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            background: #f8f8f8;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* Voting Tab Styles */
+        .voting-instructions {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .points-display {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .points-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        .voting-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .voting-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .voting-item.selected {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+            border: 3px solid #ff6b35;
+        }
+
+        .voting-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .voting-controls {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .points-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .point-btn {
+            background: #f0f0f0;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .point-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .point-btn.selected {
+            background: #ff6b35;
+            color: white;
+            border-color: #ff6b35;
+        }
+
+        .point-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .vote-submit {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 30px auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .vote-submit:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .vote-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results Tab Styles */
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .result-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-rank {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ff6b35;
+            margin-right: 20px;
+            min-width: 50px;
+        }
+
+        .result-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-right: 20px;
+        }
+
+        .result-info {
+            flex-grow: 1;
+        }
+
+        .result-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .result-details {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .result-score {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            transition: width 0.3s ease;
+        }
+
+        .message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f1b0b7;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .tab-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .points-display {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .voting-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .result-rank {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .result-img {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏀 Basketball Jersey Poll</h1>
+            <p class="subtitle">Vote for your favorite jersey designs using the 3-2-1 point system</p>
+        </header>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showTab('admin')">⚙️ Setup Jerseys</button>
+            <button class="tab-btn" onclick="showTab('vote')">🗳️ Vote</button>
+            <button class="tab-btn" onclick="showTab('results')">📊 Results</button>
+        </div>
+
+        <!-- Admin Tab -->
+        <div id="admin" class="tab-content active">
+            <div class="upload-section">
+                <h3>Add Jersey Designs</h3>
+                <p>Upload images of your jersey designs (JPG, PNG, GIF supported)</p>
+                <input type="file" id="jerseyUpload" accept="image/*" multiple style="display: none;">
+                <button class="upload-btn" onclick="document.getElementById('jerseyUpload').click()">
+                    📁 Upload Jersey Images
+                </button>
+                <p style="margin-top: 10px; color: #666; font-size: 14px;">
+                    You can also drag and drop images directly onto this area
+                </p>
+            </div>
+            
+            <div id="jerseysList">
+                <h3>Current Jerseys (<span id="jerseyCount">0</span>)</h3>
+                <div class="jerseys-grid" id="jerseysGrid">
+                    <!-- Jerseys will be added here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Voting Tab -->
+        <div id="vote" class="tab-content">
+            <div class="voting-instructions">
+                <h3>🏆 How to Vote</h3>
+                <p>Allocate your points to your favorite jersey designs:</p>
+                <div class="points-display">
+                    <div class="points-badge">🥇 First Choice: 3 Points</div>
+                    <div class="points-badge">🥈 Second Choice: 2 Points</div>
+                    <div class="points-badge">🥉 Third Choice: 1 Point</div>
+                </div>
+                <p><strong>You must allocate all 6 points to submit your vote!</strong></p>
+            </div>
+
+            <div id="votingSection">
+                <div id="votingMessage" class="message" style="display: none;"></div>
+                <div class="voting-grid" id="votingGrid">
+                    <!-- Voting options will be added here -->
+                </div>
+                <button id="submitVote" class="vote-submit" onclick="submitVote()" disabled>
+                    Submit My Vote (0/6 points allocated)
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Tab -->
+        <div id="results" class="tab-content">
+            <div class="results-header">
+                <h3>🏆 Voting Results</h3>
+                <p id="voteStats">Total votes: <span id="totalVotes">0</span></p>
+            </div>
+            <div class="results-list" id="resultsList">
+                <!-- Results will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // In-memory storage for the poll data
+        let jerseys = [];
+        let votes = [];
+        let hasVoted = false;
+        let currentVote = {};
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            updateDisplay();
+        });
+
+        function setupEventListeners() {
+            const uploadInput = document.getElementById('jerseyUpload');
+            uploadInput.addEventListener('change', handleFileUpload);
+
+            // Drag and drop functionality
+            const uploadSection = document.querySelector('.upload-section');
+            uploadSection.addEventListener('dragover', handleDragOver);
+            uploadSection.addEventListener('drop', handleDrop);
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+
+            // Update displays when switching tabs
+            if (tabName === 'vote') {
+                updateVotingDisplay();
+            } else if (tabName === 'results') {
+                updateResultsDisplay();
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const files = Array.from(e.dataTransfer.files);
+            processFiles(files);
+        }
+
+        function handleFileUpload(e) {
+            const files = Array.from(e.target.files);
+            processFiles(files);
+        }
+
+        function processFiles(files) {
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const jersey = {
+                            id: Date.now() + Math.random(),
+                            name: file.name.replace(/\.[^/.]+$/, ""), // Remove file extension
+                            image: e.target.result
+                        };
+                        jerseys.push(jersey);
+                        updateDisplay();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function removeJersey(id) {
+            jerseys = jerseys.filter(jersey => jersey.id !== id);
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            updateJerseysGrid();
+            updateVotingDisplay();
+            updateResultsDisplay();
+        }
+
+        function updateJerseysGrid() {
+            const grid = document.getElementById('jerseysGrid');
+            const count = document.getElementById('jerseyCount');
+            
+            count.textContent = jerseys.length;
+            
+            grid.innerHTML = jerseys.map(jersey => `
+                <div class="jersey-item">
+                    <img src="${jersey.image}" alt="${jersey.name}" class="jersey-img">
+                    <div class="jersey-name">${jersey.name}</div>
+                    <button class="remove-btn" onclick="removeJersey('${jersey.id}')">&times;</button>
+                </div>
+            `).join('');
+        }
+
+        function updateVotingDisplay() {
+            const grid = document.getElementById('votingGrid');
+            const message = document.getElementById('votingMessage');
+
+            if (hasVoted) {
+                message.innerHTML = '<div class="success">✅ Thank you! Your vote has been submitted.</div>';
+                message.style.display = 'block';
+                grid.style.display = 'none';
+                document.getElementById('submitVote').style.display = 'none';
+                return;
+            }
+
+            if (jerseys.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #666;">No jerseys uploaded yet. Go to Setup Jerseys tab to add some!</p>';
+                return;
+            }
+
+            grid.innerHTML = jerseys.map(jersey => `
+                <div class="voting-item" id="item-${jersey.id}">
+                    <img src="${jersey.image}" alt="${jersey.name}">
+                    <div class="voting-controls">
+                        <div class="jersey-name">${jersey.name}</div>
+                        <div class="points-selector">
+                            <button class="point-btn" onclick="selectPoints('${jersey.id}', 3)">3</button>
+                            <button class="point-btn" onclick="selectPoints('${jersey.id}', 2)">2</button>
+                            <button class="point-btn" onclick="selectPoints('${jersey.id}', 1)">1</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            updateVoteButton();
+        }
+
+        function selectPoints(jerseyId, points) {
+            // Remove this jersey from current vote if it was already selected
+            Object.keys(currentVote).forEach(id => {
+                if (currentVote[id] === points || id === jerseyId) {
+                    delete currentVote[id];
+                }
+            });
+
+            // Add new selection
+            currentVote[jerseyId] = points;
+
+            // Update visual feedback
+            updateVotingVisual();
+            updateVoteButton();
+        }
+
+        function updateVotingVisual() {
+            // Reset all items
+            document.querySelectorAll('.voting-item').forEach(item => {
+                item.classList.remove('selected');
+                item.querySelectorAll('.point-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+            });
+
+            // Highlight selected items and buttons
+            Object.keys(currentVote).forEach(jerseyId => {
+                const item = document.getElementById(`item-${jerseyId}`);
+                const points = currentVote[jerseyId];
+                
+                item.classList.add('selected');
+                item.querySelector(`.point-btn:nth-child(${4-points})`).classList.add('selected');
+            });
+        }
+
+        function updateVoteButton() {
+            const button = document.getElementById('submitVote');
+            const totalPoints = Object.values(currentVote).reduce((sum, points) => sum + points, 0);
+            const selectedCount = Object.keys(currentVote).length;
+
+            button.textContent = `Submit My Vote (${totalPoints}/6 points allocated)`;
+            button.disabled = totalPoints !== 6 || selectedCount !== 3;
+        }
+
+        function submitVote() {
+            if (Object.values(currentVote).reduce((sum, points) => sum + points, 0) !== 6) {
+                alert('Please allocate exactly 6 points (3+2+1) before submitting!');
+                return;
+            }
+
+            votes.push({
+                id: Date.now(),
+                vote: {...currentVote},
+                timestamp: new Date().toISOString()
+            });
+
+            hasVoted = true;
+            currentVote = {};
+            
+            updateVotingDisplay();
+            updateResultsDisplay();
+            
+            // Show success message
+            const message = document.getElementById('votingMessage');
+            message.innerHTML = '<div class="success">🎉 Your vote has been successfully submitted! Check the Results tab to see current standings.</div>';
+            message.style.display = 'block';
+        }
+
+        function updateResultsDisplay() {
+            const resultsList = document.getElementById('resultsList');
+            const totalVotesSpan = document.getElementById('totalVotes');
+            
+            totalVotesSpan.textContent = votes.length;
+
+            if (votes.length === 0) {
+                resultsList.innerHTML = '<p style="text-align: center; color: #666;">No votes submitted yet.</p>';
+                return;
+            }
+
+            // Calculate scores
+            const scores = {};
+            jerseys.forEach(jersey => {
+                scores[jersey.id] = {
+                    jersey: jersey,
+                    totalPoints: 0,
+                    voteBreakdown: { 3: 0, 2: 0, 1: 0 }
+                };
+            });
+
+            votes.forEach(vote => {
+                Object.keys(vote.vote).forEach(jerseyId => {
+                    const points = vote.vote[jerseyId];
+                    if (scores[jerseyId]) {
+                        scores[jerseyId].totalPoints += points;
+                        scores[jerseyId].voteBreakdown[points]++;
+                    }
+                });
+            });
+
+            // Sort by total points
+            const sortedResults = Object.values(scores).sort((a, b) => b.totalPoints - a.totalPoints);
+            const maxPoints = sortedResults[0]?.totalPoints || 1;
+
+            resultsList.innerHTML = sortedResults.map((result, index) => {
+                const percentage = (result.totalPoints / maxPoints) * 100;
+                const rank = index + 1;
+                const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+                
+                return `
+                    <div class="result-item">
+                        <div class="result-rank">${medal} ${rank}</div>
+                        <img src="${result.jersey.image}" alt="${result.jersey.name}" class="result-img">
+                        <div class="result-info">
+                            <div class="result-name">${result.jersey.name}</div>
+                            <div class="result-details">
+                                1st place votes: ${result.voteBreakdown[3]} • 
+                                2nd place votes: ${result.voteBreakdown[2]} • 
+                                3rd place votes: ${result.voteBreakdown[1]}
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                        <div class="result-score">${result.totalPoints}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Export/Import functionality for sharing results
+        function exportData() {
+            const data = {
+                jerseys: jerseys,
+                votes: votes,
+                timestamp: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'jersey-poll-results.json';
+            a.click();
+        }
+    </script>
+</body>
+</html>

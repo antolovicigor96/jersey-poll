@@ -285,6 +285,10 @@
                 font-size: 2rem;
             }
 
+            .header p {
+                font-size: 14px;
+            }
+
             .jersey-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
                 gap: 15px;
@@ -300,6 +304,128 @@
                 padding: 8px 12px;
                 min-width: 40px;
                 font-size: 14px;
+            }
+
+            /* Instructions mobile fixes */
+            .instructions {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
+            .instructions h3 {
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+
+            .instructions ul {
+                padding-left: 20px;
+            }
+
+            .instructions li {
+                font-size: 14px;
+                line-height: 1.5;
+                margin-bottom: 8px;
+            }
+
+            /* Results table mobile fixes */
+            .results-table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 0 -15px;
+                padding: 0 15px;
+            }
+
+            .results-table {
+                min-width: 600px;
+                font-size: 14px;
+            }
+
+            .results-table th,
+            .results-table td {
+                padding: 8px 6px;
+                white-space: nowrap;
+            }
+
+            .results-table th {
+                font-size: 13px;
+            }
+
+            .results-table img {
+                width: 35px !important;
+                height: 35px !important;
+            }
+
+            /* Voter form mobile */
+            .voter-form {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
+            .voter-form input {
+                padding: 10px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            /* Success screen mobile */
+            .voting-complete {
+                padding: 30px 15px;
+            }
+
+            .voting-complete h2 {
+                font-size: 1.5rem;
+            }
+
+            .voting-complete p {
+                font-size: 16px;
+            }
+
+            /* Jersey card mobile improvements */
+            .jersey-card h3 {
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+
+            .vote-options {
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .jersey-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .jersey-card {
+                max-width: 280px;
+                margin: 0 auto;
+            }
+
+            .nav-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+                margin: 3px;
+            }
+
+            .instructions {
+                padding: 12px;
+            }
+
+            .instructions h3 {
+                font-size: 15px;
+            }
+
+            .instructions li {
+                font-size: 13px;
+            }
+
+            .vote-btn {
+                padding: 12px 24px;
+                font-size: 16px;
             }
         }
     </style>
@@ -703,36 +829,38 @@
                     <p><strong>Poslednje ažuriranje:</strong> ${new Date(currentData.lastUpdated).toLocaleString('sr-RS')}</p>
                 </div>
                 
-                <table class="results-table">
-                    <thead>
-                        <tr>
-                            <th>Rang</th>
-                            <th>Dres</th>
-                            <th>Ukupno Poena</th>
-                            <th>3 boda</th>
-                            <th>2 boda</th>
-                            <th>1 bod</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${sortedResults.map((jersey, index) => `
+                <div class="results-table-container">
+                    <table class="results-table">
+                        <thead>
                             <tr>
-                                <td><strong>${index + 1}.</strong></td>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <img src="${jersey.image}" alt="${jersey.name}" 
-                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
-                                        <span><strong>${jersey.name}</strong></span>
-                                    </div>
-                                </td>
-                                <td><strong>${jersey.totalScore}</strong></td>
-                                <td>${jersey.details[3]}</td>
-                                <td>${jersey.details[2]}</td>
-                                <td>${jersey.details[1]}</td>
+                                <th>Rang</th>
+                                <th>Dres</th>
+                                <th>Ukupno</th>
+                                <th>3 boda</th>
+                                <th>2 boda</th>
+                                <th>1 bod</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            ${sortedResults.map((jersey, index) => `
+                                <tr>
+                                    <td><strong>${index + 1}.</strong></td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <img src="${jersey.image}" alt="${jersey.name}" 
+                                                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; flex-shrink: 0;">
+                                            <span style="font-weight: bold; min-width: 0;">${jersey.name}</span>
+                                        </div>
+                                    </td>
+                                    <td><strong>${jersey.totalScore}</strong></td>
+                                    <td>${jersey.details[3]}</td>
+                                    <td>${jersey.details[2]}</td>
+                                    <td>${jersey.details[1]}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
 
                 <h3 style="margin-top: 30px;">👥 Glasači:</h3>
                 <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px;">
